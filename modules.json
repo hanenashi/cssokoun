@@ -1,8 +1,12 @@
 {
   "system": [
     { "id": "sys-logger", "file": "modules/sys-logger.js", "required": true },
-    { "id": "sys-ui", "file": "modules/ui-panel.js", "required": true }
+    { "id": "sys-ui", "file": "modules/sys-ui.js", "required": true },
+    { "id": "sys-editor", "file": "modules/sys-editor.js", "required": true },
+    { "id": "sys-inspector", "file": "modules/sys-inspector.js", "required": true }
   ],
-  "themes": [],
+  "themes": [
+    { "id": "theme-mobile", "name": "Mobile Theme (kostej3)", "file": "modules/theme-mobile.css" }
+  ],
   "tweaks": []
 }
