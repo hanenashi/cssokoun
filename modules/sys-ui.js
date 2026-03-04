@@ -1,7 +1,6 @@
-// modules/sys-ui.js
 const log = (level, ...args) => window.cssokoun.log(level, 'sys-ui', ...args);
 
-log('INFO', 'Building Mobile-Optimized UI Panel...');
+log('INFO', 'Building Responsive UI Panel...');
 
 function injectUI() {
     // 1. Attach the Hub Button to Okoun's top menu
@@ -14,39 +13,44 @@ function injectUI() {
     hubBtn.style.cssText = 'margin-left: 10px; color: #0ff; text-decoration: none;';
     menu.appendChild(hubBtn);
 
-    // 2. Build the Mobile "Bottom Sheet" Panel
+    // 2. Build the Responsive Panel
     const panel = document.createElement('div');
-    panel.id = 'cssokoun-mobile-panel';
+    panel.id = 'cssokoun-ui-panel'; // FIXED ID!
     
-    // Inject mobile-friendly CSS for the UI
+    // Inject responsive CSS
     const uiStyle = document.createElement('style');
     uiStyle.textContent = `
-        #cssokoun-mobile-panel {
-            position: fixed; bottom: -100%; left: 0; width: 100%; height: 75vh;
-            background: #111; color: #eee; z-index: 999999;
-            transition: bottom 0.3s ease-in-out; border-top: 2px solid #0ff;
-            border-radius: 15px 15px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
+        #cssokoun-ui-panel {
+            position: fixed; background: #111; color: #eee; z-index: 999999;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
             font-family: sans-serif; display: flex; flex-direction: column;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
         }
-        .cssokoun-header {
-            padding: 15px; border-bottom: 1px solid #333; display: flex;
-            justify-content: space-between; align-items: center;
-        }
+        .cssokoun-header { padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
         .cssokoun-header h3 { margin: 0; font-size: 18px; color: #0ff; }
-        .cssokoun-close-btn { background: none; border: none; color: #fff; font-size: 24px; }
+        .cssokoun-close-btn { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
         .cssokoun-content { padding: 15px; overflow-y: auto; flex-grow: 1; }
-        
-        /* Thumb-friendly toggles */
-        .cssokoun-toggle-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 1px solid #222; font-size: 16px;
+        .cssokoun-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #222; font-size: 16px; }
+        .cssokoun-toggle-row input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; cursor: pointer; }
+        .cssokoun-btn { width: 100%; padding: 15px; background: #0078D7; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+
+        /* MOBILE VIEW: Bottom Sheet */
+        @media (max-width: 768px) {
+            #cssokoun-ui-panel {
+                bottom: -100%; left: 0; width: 100%; height: 75vh;
+                border-top: 2px solid #0ff; border-radius: 15px 15px 0 0;
+            }
+            #cssokoun-ui-panel.active { bottom: 0; }
         }
-        .cssokoun-toggle-row input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; }
-        
-        .cssokoun-btn {
-            width: 100%; padding: 15px; background: #0078D7; color: #fff;
-            border: none; border-radius: 8px; font-size: 16px; font-weight: bold;
-            margin-top: 15px;
+
+        /* DESKTOP VIEW: Floating Sidebar */
+        @media (min-width: 769px) {
+            #cssokoun-ui-panel {
+                top: 50px; right: -500px; width: 400px; max-height: 80vh;
+                border: 1px solid #333; border-top: 2px solid #0ff; border-radius: 8px;
+            }
+            #cssokoun-ui-panel.active { right: 20px; }
+            .cssokoun-toggle-row:hover { background: rgba(255,255,255,0.05); } 
         }
     `;
     document.head.appendChild(uiStyle);
@@ -77,7 +81,7 @@ function injectUI() {
         const checked = state[mod.id] ? 'checked' : '';
         return `
             <div class="cssokoun-toggle-row">
-                <label for="chk-${mod.id}" style="flex-grow: 1;">${mod.name || mod.id} <small style="color:#666;">(${type})</small></label>
+                <label for="chk-${mod.id}" style="flex-grow: 1; cursor: pointer;">${mod.name || mod.id} <small style="color:#666;">(${type})</small></label>
                 <input type="checkbox" id="chk-${mod.id}" class="cssokoun-sys-toggle" data-id="${mod.id}" ${checked}>
             </div>
         `;
@@ -89,11 +93,11 @@ function injectUI() {
     // 4. Event Listeners
     hubBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        panel.style.bottom = '0'; // Slide up
+        panel.classList.toggle('active');
     });
 
     document.getElementById('cssokoun-close').addEventListener('click', () => {
-        panel.style.bottom = '-100%'; // Slide down
+        panel.classList.remove('active');
     });
 
     document.getElementById('cssokoun-save').addEventListener('click', () => {
@@ -102,13 +106,12 @@ function injectUI() {
             newStates[chk.dataset.id] = chk.checked;
         });
         
-        // Use the GM API we passed through the core
         GM.set('cssokoun_modules', newStates);
         log('INFO', 'Preferences saved. Reloading...');
         window.location.reload();
     });
 
-    log('SNIFF', 'Mobile UI fully injected.');
+    log('SNIFF', 'Responsive UI fully injected.');
 }
 
 // Ensure the page is ready before injecting
