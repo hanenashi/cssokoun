@@ -1,0 +1,8 @@
+{
+  "system": [
+    { "id": "sys-logger", "file": "modules/sys-logger.js", "required": true },
+    { "id": "sys-ui", "file": "modules/ui-panel.js", "required": true }
+  ],
+  "themes": [],
+  "tweaks": []
+}
