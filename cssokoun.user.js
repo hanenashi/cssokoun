@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         cssokoun Seed
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Modular CSS/JS loader for okoun.cz
 // @author       kokochan
 // @match        *://www.okoun.cz/*
@@ -17,12 +17,12 @@
     const REPO_URL = 'https://raw.githubusercontent.com/hanenashi/cssokoun/main/';
     const CORE_URL = REPO_URL + 'modules/core.js?v=' + Date.now();
 
-    // Package the GM APIs so the external scripts can use them securely
+    // Package the GM APIs with arrow functions to preserve the sandbox context!
     const GM_API = {
-        fetch: GM_xmlhttpRequest,
-        get: GM_getValue,
-        set: GM_setValue,
-        addStyle: GM_addStyle
+        fetch: (opts) => GM_xmlhttpRequest(opts),
+        get: (key, def) => GM_getValue(key, def),
+        set: (key, val) => GM_setValue(key, val),
+        addStyle: (css) => GM_addStyle(css)
     };
 
     GM_xmlhttpRequest({
