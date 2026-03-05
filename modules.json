@@ -6,7 +6,9 @@
     { "id": "sys-inspector", "file": "modules/sys-inspector.js", "required": true }
   ],
   "themes": [
-    { "id": "theme-mobile", "name": "Mobile Theme (kostej3)", "file": "modules/theme-mobile.css" }
+    { "id": "theme-mobile", "name": "Mobile Theme (CSS)", "file": "modules/theme-mobile.css" }
   ],
-  "tweaks": []
+  "tweaks": [
+    { "id": "mobile-viewport", "name": "📱 Force Mobile Viewport (JS)", "file": "modules/theme-mobile.js" }
+  ]
 }
