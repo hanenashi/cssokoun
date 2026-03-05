@@ -19,18 +19,18 @@ function initInspector() {
         border-radius: 15px 15px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.9);
     `;
     
-    tweakMenu.innerHTML = `
+tweakMenu.innerHTML = `
         <h4 id="tweak-target" style="margin: 0 0 15px 0; color: #0ff; font-family: monospace; word-break: break-all;">Target</h4>
-        <button id="tweak-hide" style="width: 100%; background: #500; color: #fff; border: 1px solid #f00; padding: 12px; margin-bottom: 15px; border-radius: 6px; font-weight: bold;">🚫 Hide Element</button>
+        <button id="tweak-hide" style="width: 100%; background: #500; color: #fff; border: 1px solid #f00; padding: 12px; margin-bottom: 15px; border-radius: 6px; font-weight: bold; cursor: pointer;">🚫 Hide Element</button>
         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <div style="flex: 1;"><label style="font-size: 12px;">Text Color</label><input type="color" id="tweak-color" style="width: 100%; height: 40px;"></div>
-            <div style="flex: 1;"><label style="font-size: 12px;">BG Color</label><input type="color" id="tweak-bg" style="width: 100%; height: 40px;"></div>
+            <div style="flex: 1;"><label style="font-size: 12px;">Text Color</label><input type="color" id="tweak-color" style="width: 100%; height: 40px; cursor: pointer;"></div>
+            <div style="flex: 1;"><label style="font-size: 12px;">BG Color</label><input type="color" id="tweak-bg" style="width: 100%; height: 40px; cursor: pointer;"></div>
         </div>
         <label style="font-size: 12px;">Font Size (px)</label>
         <input type="number" id="tweak-size" style="width: 100%; padding: 10px; margin-bottom: 15px; background: #333; color: #fff; border: 1px solid #555; border-radius: 6px; box-sizing: border-box;">
         <div style="display: flex; gap: 10px;">
-            <button id="tweak-apply" style="flex: 2; background: #050; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: bold;">Apply & Save</button>
-            <button id="tweak-cancel" style="flex: 1; background: #444; color: #fff; border: none; padding: 12px; border-radius: 6px;">Cancel</button>
+            <button id="tweak-apply" style="flex: 2; background: #050; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer;">Apply & Save</button>
+            <button id="tweak-cancel" style="flex: 1; background: #444; color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer;">Cancel</button>
         </div>
     `;
     document.body.appendChild(tweakMenu);
