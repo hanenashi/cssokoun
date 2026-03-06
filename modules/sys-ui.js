@@ -1,5 +1,5 @@
 const log = (level, ...args) => window.cssokoun.log(level, 'sys-ui', ...args);
-log('INFO', 'Building Bulletproof Native Window Hub...');
+log('INFO', 'Building Blob-Window Hub...');
 
 window.cssokoun.hubWindow = null;
 
@@ -10,20 +10,32 @@ function injectUI() {
     const hubBtn = document.createElement('a');
     hubBtn.href = '#';
     hubBtn.innerHTML = '⚙️';
-    hubBtn.style.cssText = 'margin-left: 10px; color: var(--cso-accent, #007acc); text-decoration: none; font-weight: bold; transition: color 0.2s;';
+    hubBtn.style.cssText = 'margin-left: 10px; color: var(--cso-accent, #007acc); text-decoration: none; font-weight: bold; transition: color 0.2s; font-size: 16px;';
     menu.appendChild(hubBtn);
+
+    // --- Message Listener for the Blob Window ---
+    window.addEventListener('message', (e) => {
+        if (!e.data || e.data.app !== 'cssokoun') return;
+        
+        if (e.data.action === 'SAVE_CONFIG') {
+            const manifest = window.cssokoun.manifest;
+            const finalStates = e.data.states;
+            manifest.themes.forEach(mod => finalStates[mod.id] = false);
+            if (e.data.theme) finalStates[e.data.theme] = true;
+            
+            GM.set('cssokoun_modules', finalStates);
+            log('INFO', 'Preferences saved via postMessage. Reloading...');
+            window.location.reload();
+        } else if (e.data.action === 'LAUNCH_EDITOR') {
+            if (window.cssokoun.launchEditor) window.cssokoun.launchEditor();
+        } else if (e.data.action === 'LAUNCH_INSPECTOR') {
+            if (window.cssokoun.launchInspector) window.cssokoun.launchInspector();
+        }
+    });
 
     hubBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        
-        if (window.cssokoun.hubWindow && !window.cssokoun.hubWindow.closed) {
-            window.cssokoun.hubWindow.focus();
-            return;
-        }
-
-        // Use _blank to prevent Chrome's ghost-window bug
-        const win = window.open('', '_blank', 'width=360,height=650,menubar=no,toolbar=no,location=no,status=no');
-        window.cssokoun.hubWindow = win;
+        if (window.cssokoun.hubWindow && !window.cssokoun.hubWindow.closed) return window.cssokoun.hubWindow.focus();
 
         const state = window.cssokoun.state.modules;
         const manifest = window.cssokoun.manifest;
@@ -49,8 +61,7 @@ function injectUI() {
             });
         }
 
-        win.document.open(); // Flush document stream
-        win.document.write(`
+        const html = `
             <!DOCTYPE html>
             <html>
             <head>
@@ -64,17 +75,13 @@ function injectUI() {
                     }
                     body { background: var(--cso-bg-base); color: var(--cso-text-main); font-family: var(--cso-font-sans); margin: 0; padding: 20px; box-sizing: border-box; }
                     ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--cso-bg-base); } ::-webkit-scrollbar-thumb { background: var(--cso-border); border-radius: 4px; }
-                    
                     h3 { margin: 0 0 20px 0; color: var(--cso-text-bright); font-size: 20px; font-weight: 600; border-bottom: 1px solid var(--cso-border); padding-bottom: 15px; text-align: center; }
                     .section-title { margin: 0 0 10px 0; color: var(--cso-text-bright); border-bottom: 1px solid var(--cso-border); padding-bottom: 6px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-                    
                     select { width: 100%; padding: 10px; background: var(--cso-bg-input); color: var(--cso-text-bright); border: 1px solid var(--cso-border); border-radius: 4px; font-size: 14px; margin-bottom: 25px; outline: none; cursor: pointer; }
                     select:focus { border-color: var(--cso-accent); }
-                    
                     .cssokoun-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; border-radius: 4px; transition: background 0.2s; }
                     .cssokoun-toggle-row:hover { background: rgba(255,255,255,0.05); }
                     input[type="checkbox"] { transform: scale(1.3); cursor: pointer; accent-color: var(--cso-accent); }
-                    
                     .launch-pad { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; }
                     button { width: 100%; border: none; padding: 12px; cursor: pointer; border-radius: 4px; font-weight: 600; font-size: 14px; color: #fff; transition: background 0.2s; font-family: var(--cso-font-sans); }
                     #btn-save { background: var(--cso-success); margin-bottom: 15px; } #btn-save:hover { background: #5a8247; }
@@ -84,46 +91,34 @@ function injectUI() {
             </head>
             <body>
                 <h3>⚙️ cssokoun Control Hub</h3>
-                
                 <h4 class="section-title">Base Theme</h4>
                 <select id="cssokoun-theme-dropdown">${themeOptions}</select>
-
                 <h4 class="section-title">Behavioral Tweaks</h4>
                 <div style="margin-bottom: 20px;">${tweakRows}</div>
-                
                 <button id="btn-save">💾 Save Configuration & Reload</button>
-                
                 <div class="launch-pad">
                     <h4 class="section-title">Developer Tools</h4>
                     <button id="btn-editor">🪟 Launch Code Editor</button>
                     <button id="btn-inspector">🔍 Launch Visual Inspector</button>
                 </div>
+                
+                <script>
+                    document.getElementById('btn-save').addEventListener('click', () => {
+                        const states = {};
+                        document.querySelectorAll('.cssokoun-sys-toggle').forEach(chk => { states[chk.dataset.id] = chk.checked; });
+                        const theme = document.getElementById('cssokoun-theme-dropdown').value;
+                        window.opener.postMessage({ app: 'cssokoun', action: 'SAVE_CONFIG', states, theme }, '*');
+                    });
+                    document.getElementById('btn-editor').addEventListener('click', () => window.opener.postMessage({ app: 'cssokoun', action: 'LAUNCH_EDITOR' }, '*'));
+                    document.getElementById('btn-inspector').addEventListener('click', () => window.opener.postMessage({ app: 'cssokoun', action: 'LAUNCH_INSPECTOR' }, '*'));
+                </script>
             </body>
             </html>
-        `);
-        win.document.close();
-
-        const doc = win.document;
-
-        doc.getElementById('btn-save').addEventListener('click', () => {
-            const newStates = {};
-            doc.querySelectorAll('.cssokoun-sys-toggle').forEach(chk => { newStates[chk.dataset.id] = chk.checked; });
-            manifest.themes.forEach(mod => newStates[mod.id] = false);
-            const selectedTheme = doc.getElementById('cssokoun-theme-dropdown').value;
-            if (selectedTheme) newStates[selectedTheme] = true;
-
-            GM.set('cssokoun_modules', newStates);
-            log('INFO', 'Preferences saved. Reloading host page...');
-            window.location.reload();
-        });
-
-        doc.getElementById('btn-editor').addEventListener('click', () => {
-            if (window.cssokoun.launchEditor) window.cssokoun.launchEditor();
-        });
-
-        doc.getElementById('btn-inspector').addEventListener('click', () => {
-            if (window.cssokoun.launchInspector) window.cssokoun.launchInspector();
-        });
+        `;
+        
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        window.cssokoun.hubWindow = window.open(url, '_blank', 'width=360,height=650,menubar=no,toolbar=no,location=no,status=no');
     });
 }
 
