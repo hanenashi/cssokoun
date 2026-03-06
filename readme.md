@@ -12,24 +12,25 @@ It uses a microkernel architecture. You install the Tampermonkey seed once, and 
 
 ## 🗺️ Roadmap Skeleton
 
-**Phase 1: Architecture (Current)**
+**Phase 1: Architecture**
 - [x] Create Tampermonkey Seed script.
 - [x] Build remote `core.js` and `modules.json` manifest fetcher.
-- [ ] Implement `sys-logger` for buffered, color-coded console debugging.
+- [x] Implement `sys-logger` for buffered, color-coded console debugging.
 
-**Phase 2: The Hub UI**
-- [ ] Build `sys-ui` module to inject the floating control panel.
-- [ ] Wire up toggles for enabling/disabling modules via `localStorage`.
-- [ ] Add live-editor textareas for quick local CSS/JS overrides.
+**Phase 2: The Hub UI & Live Editor**
+- [x] Build `sys-ui` module to launch the central Control Hub (Native Window).
+- [x] Wire up toggles and dropdowns for themes/modules via `localStorage`.
+- [x] Build standalone Live Code Editor with Import/Export and active theme scraping (Native Window).
 
 **Phase 3: Visual Inspector**
-- [ ] Build `sys-inspector` module.
-- [ ] Implement point-and-click element highlighting.
-- [ ] Auto-generate CSS selectors and apply live style changes.
+- [x] Build `sys-inspector` module with sticky Selection Mode (Native Window).
+- [x] Implement point-and-click DevTools-style element highlighting.
+- [x] Auto-generate CSS selectors and inject live style changes with Undo/Compare history.
 
-**Phase 4: Themes & Tweaks**
-- [ ] Port existing Stylus "Mobile Theme" into a clean CSS module.
-- [ ] Add behavioral tweaks (e.g., troll hiding scripts).
+**Phase 4: Themes & Tweaks (Ongoing)**
+- [x] Port legacy Stylus themes (Mobile, MAGEO, Kostej3, Darksilver, Silverlight) into pure CSS modules.
+- [x] Add system behavioral tweaks (e.g., Mobile Viewport forcing).
+- [ ] Add community behavioral tweaks (e.g., troll hiding scripts).
 
-**Phase 5: Ecosystem Bridging**
-- [ ] Create compatibility CSS layers so cssokoun blends perfectly with OPUc, GoToT, and the Fotki lightbox.
+**Phase 5: Ecosystem Bridging (Current)**
+- [ ] Create compatibility CSS layers (Custom Class Wrapper) so cssokoun blends perfectly with OPUc, GoToT, and the Fotki lightbox.
