@@ -1,5 +1,5 @@
 const log = (level, ...args) => window.cssokoun.log(level, 'sys-inspector', ...args);
-log('INFO', 'Loading Blob-Window Inspector...');
+log('INFO', 'Loading UTF-8 Blob-Window Inspector...');
 
 window.cssokoun.inspectorWindow = null;
 let inspectorActive = false;
@@ -36,12 +36,14 @@ function getCSSSelector(el) {
     return path.join(' > ');
 }
 
-// --- Host DOM Event Listeners ---
 document.addEventListener('mousemove', (e) => {
     if (!inspectorActive) return;
     const rect = e.target.getBoundingClientRect();
     highlightBox.style.display = 'block';
-    highlightBox.style.top = rect.top + 'px'; highlightBox.style.left = rect.left + 'px'; highlightBox.style.width = rect.width + 'px'; highlightBox.style.height = rect.height + 'px';
+    highlightBox.style.top = rect.top + 'px';
+    highlightBox.style.left = rect.left + 'px';
+    highlightBox.style.width = rect.width + 'px';
+    highlightBox.style.height = rect.height + 'px';
 });
 
 document.addEventListener('click', (e) => {
@@ -61,8 +63,7 @@ document.addEventListener('click', (e) => {
     }
 }, { capture: true });
 
-// --- Host Listener for Blob Commands ---
-window.addEventListener('message', (e) => {
+window.addEventListener('message', async (e) => {
     if (!e.data || e.data.app !== 'cssokoun') return;
     
     if (e.data.action === 'TOGGLE_MODE') {
@@ -74,7 +75,8 @@ window.addEventListener('message', (e) => {
         let currentCSS = GM.get('cssokoun_custom_css', '');
         let newCSS = currentCSS + block;
         
-        tweakHistory.push(newCSS); GM.set('cssokoun_custom_css', newCSS);
+        tweakHistory.push(newCSS); 
+        await Promise.resolve(GM.set('cssokoun_custom_css', newCSS));
         liveStyleNode.textContent = newCSS; 
         
         if (window.cssokoun.editorWindow && !window.cssokoun.editorWindow.closed) {
@@ -85,7 +87,8 @@ window.addEventListener('message', (e) => {
         if (tweakHistory.length <= 1) return;
         tweakHistory.pop(); 
         const previousCSS = tweakHistory[tweakHistory.length - 1] || '';
-        GM.set('cssokoun_custom_css', previousCSS); liveStyleNode.textContent = previousCSS;
+        await Promise.resolve(GM.set('cssokoun_custom_css', previousCSS)); 
+        liveStyleNode.textContent = previousCSS;
         
         if (window.cssokoun.editorWindow && !window.cssokoun.editorWindow.closed) {
             window.cssokoun.editorWindow.postMessage({ app: 'cssokoun_popup', action: 'SYNC_CSS', css: previousCSS }, '*');
@@ -103,7 +106,6 @@ window.addEventListener('message', (e) => {
     }
 });
 
-// --- Popup Window Generator ---
 window.cssokoun.launchInspector = function() {
     if (window.cssokoun.inspectorWindow && !window.cssokoun.inspectorWindow.closed) return window.cssokoun.inspectorWindow.focus();
 
@@ -114,6 +116,7 @@ window.cssokoun.launchInspector = function() {
         <!DOCTYPE html>
         <html>
         <head>
+            <meta charset="UTF-8">
             <title>cssokoun Inspector</title>
             <style>
                 :root {
@@ -213,7 +216,7 @@ window.cssokoun.launchInspector = function() {
         </html>
     `;
 
-    const blob = new Blob([html], { type: 'text/html' });
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    window.cssokoun.inspectorWindow = window.open(url, '_blank', 'width=380,height=550,menubar=no,toolbar=no,location=no,status=no');
+    window.cssokoun.inspectorWindow = window.open(url, 'cssokounInspector', 'width=380,height=550,menubar=no,toolbar=no,location=no,status=no');
 };
