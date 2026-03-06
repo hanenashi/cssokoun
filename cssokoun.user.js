@@ -17,7 +17,7 @@
     const REPO_URL = 'https://raw.githubusercontent.com/hanenashi/cssokoun/main/';
     const CORE_URL = REPO_URL + 'modules/core.js?v=' + Date.now();
 
-    // Package the GM APIs with arrow functions to preserve the sandbox context!
+    // Wrapped in arrow functions to preserve the Tampermonkey sandbox context
     const GM_API = {
         fetch: (opts) => GM_xmlhttpRequest(opts),
         get: (key, def) => GM_getValue(key, def),
@@ -30,7 +30,6 @@
         url: CORE_URL,
         onload: function(res) {
             if (res.status === 200) {
-                // Execute the Core and pass it the API and the Repo URL
                 const initCore = new Function('GM', 'REPO', res.responseText);
                 initCore(GM_API, REPO_URL);
             } else {

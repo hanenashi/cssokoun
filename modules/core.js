@@ -4,10 +4,9 @@ window.cssokoun.state = {
     debug: GM.get('cssokoun_debug', true)
 };
 
-// --- DUMB BOOTSTRAP LOGGER (Will be replaced by sys-logger) ---
+// --- DUMB BOOTSTRAP LOGGER ---
 window.cssokoun._logBuffer = [];
 window.cssokoun.log = function(level, moduleName, ...args) {
-    // Just save it for later
     window.cssokoun._logBuffer.push({ level, moduleName, args });
 };
 
@@ -16,9 +15,7 @@ const coreLog = (level, ...args) => window.cssokoun.log(level, 'core', ...args);
 coreLog('INFO', 'Core initialized. Dumb logger active.');
 coreLog('SNIFF', 'Boot parameters:', { REPO: REPO, STATE: window.cssokoun.state });
 
-// --- THE MANIFEST FETCHER ---
 const MANIFEST_URL = REPO + 'modules.json?v=' + Date.now();
-
 coreLog('SNIFF', `Fetching manifest from: ${MANIFEST_URL}`);
 
 GM.fetch({
@@ -37,7 +34,6 @@ GM.fetch({
     }
 });
 
-// --- THE ROUTER ---
 function loadModules(manifest) {
     const cacheBuster = `?v=${Date.now()}`;
 
@@ -69,16 +65,13 @@ function loadModules(manifest) {
         });
     };
 
-    // Load System (sys-logger will be first)
     manifest.system.forEach(mod => {
         if (mod.required || window.cssokoun.state.modules[mod.id]) injectJS(mod.file, mod.id);
     });
 
-    // Load Themes & Tweaks
     if (manifest.themes) manifest.themes.forEach(mod => { if (window.cssokoun.state.modules[mod.id]) injectCSS(mod.file, mod.id); });
     if (manifest.tweaks) manifest.tweaks.forEach(mod => { if (window.cssokoun.state.modules[mod.id]) injectJS(mod.file, mod.id); });
 
-    // Inject Custom Overrides Last
     const customCSS = GM.get('cssokoun_custom_css', '');
     if (customCSS.trim().length > 0) GM.addStyle(customCSS);
 }
