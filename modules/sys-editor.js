@@ -1,14 +1,14 @@
 const log = (level, ...args) => cssokoun.log(level, 'sys-editor', ...args);
-log('INFO', 'Loading Blob-Window Editor module...');
+log('INFO', 'Loading UTF-8 Blob-Window Editor module...');
 
 window.cssokoun.editorWindow = null;
 
-// Listen for Blob Window Save Commands
-window.addEventListener('message', (e) => {
+window.addEventListener('message', async (e) => {
     if (!e.data || e.data.app !== 'cssokoun') return;
     if (e.data.action === 'SAVE_OVERRIDES') {
-        GM.set('cssokoun_custom_css', e.data.css);
-        GM.set('cssokoun_custom_js', e.data.js);
+        // Await the storage commands so they definitely save before proceeding
+        await Promise.resolve(GM.set('cssokoun_custom_css', e.data.css));
+        await Promise.resolve(GM.set('cssokoun_custom_js', e.data.js));
         
         let liveStyleNode = document.getElementById('cssokoun-live-styles');
         if (!liveStyleNode) {
@@ -39,6 +39,7 @@ window.cssokoun.launchEditor = function() {
         <!DOCTYPE html>
         <html>
         <head>
+            <meta charset="UTF-8">
             <title>cssokoun Code Editor</title>
             <style>
                 :root {
@@ -80,7 +81,6 @@ window.cssokoun.launchEditor = function() {
             <input type="file" id="file-import" accept=".css" style="display: none;">
 
             <script>
-                // Safely inject the content via JS to avoid template literal escaping issues
                 document.getElementById('theme-area').value = decodeURIComponent("${encodeURIComponent(themeSource)}");
                 document.getElementById('css-area').value = decodeURIComponent("${encodeURIComponent(customCSS)}");
                 document.getElementById('js-area').value = decodeURIComponent("${encodeURIComponent(customJS)}");
@@ -136,7 +136,6 @@ window.cssokoun.launchEditor = function() {
                     });
                 });
 
-                // Sync incoming updates from Inspector
                 window.addEventListener('message', (e) => {
                     if(e.data && e.data.app === 'cssokoun_popup' && e.data.action === 'SYNC_CSS') {
                         document.getElementById('css-area').value = e.data.css;
@@ -147,7 +146,8 @@ window.cssokoun.launchEditor = function() {
         </html>
     `;
 
-    const blob = new Blob([html], { type: 'text/html' });
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    window.cssokoun.editorWindow = window.open(url, '_blank', 'width=700,height=850,menubar=no,toolbar=no,location=no,status=no');
+    // Reuse specific window
+    window.cssokoun.editorWindow = window.open(url, 'cssokounEditor', 'width=700,height=850,menubar=no,toolbar=no,location=no,status=no');
 };
