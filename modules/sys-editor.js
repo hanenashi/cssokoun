@@ -1,5 +1,5 @@
 const log = (level, ...args) => cssokoun.log(level, 'sys-editor', ...args);
-log('INFO', 'Loading Native Window Editor module...');
+log('INFO', 'Loading Bulletproof Native Editor module...');
 
 window.cssokoun.editorWindow = null;
 
@@ -21,9 +21,10 @@ window.cssokoun.launchEditor = function() {
     }
     if (!themeSource) themeSource = '/* No Base Theme Loaded (Vanilla) */';
 
-    const win = window.open('', 'cssokounEditor', 'width=700,height=850,menubar=no,toolbar=no,location=no,status=no');
+    const win = window.open('', '_blank', 'width=700,height=850,menubar=no,toolbar=no,location=no,status=no');
     window.cssokoun.editorWindow = win;
 
+    win.document.open(); // Flush document stream
     win.document.write(`
         <!DOCTYPE html>
         <html>

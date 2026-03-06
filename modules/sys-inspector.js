@@ -1,12 +1,11 @@
 const log = (level, ...args) => window.cssokoun.log(level, 'sys-inspector', ...args);
-log('INFO', 'Loading Professional Native Inspector...');
+log('INFO', 'Loading Bulletproof Native Inspector...');
 
 window.cssokoun.inspectorWindow = null;
 let inspectorActive = false;
 let currentTarget = null;
 let tweakHistory = [];
 
-// Ensure live styles and tracking logic exist on host
 const initialCSS = GM.get('cssokoun_custom_css', '');
 if (initialCSS.trim() !== '') tweakHistory.push(initialCSS);
 
@@ -37,7 +36,6 @@ function getCSSSelector(el) {
     return path.join(' > ');
 }
 
-// Host listeners (Always active, but gated by `inspectorActive` flag)
 document.addEventListener('mousemove', (e) => {
     if (!inspectorActive) return;
     const rect = e.target.getBoundingClientRect();
@@ -54,7 +52,6 @@ document.addEventListener('click', (e) => {
     
     currentTarget = e.target;
     
-    // Update the native window inputs
     if (window.cssokoun.inspectorWindow && !window.cssokoun.inspectorWindow.closed) {
         const doc = window.cssokoun.inspectorWindow.document;
         doc.getElementById('tweak-target').innerText = getCSSSelector(currentTarget);
@@ -62,15 +59,11 @@ document.addEventListener('click', (e) => {
         doc.getElementById('tweak-size').value = parseInt(computed.fontSize);
         doc.getElementById('tweak-opacity').value = computed.opacity;
         
-        // Flash visual feedback in popup
         const targetBox = doc.getElementById('tweak-target');
         targetBox.style.borderColor = '#007acc';
         targetBox.style.color = '#fff';
         setTimeout(() => { targetBox.style.borderColor = '#454545'; targetBox.style.color = '#9cdcfe'; }, 300);
     }
-    
-    // NOTE: We intentionally DO NOT set inspectorActive = false here.
-    // The user must manually toggle it off in the popup to resume normal browsing.
 }, { capture: true });
 
 window.cssokoun.launchInspector = function() {
@@ -79,13 +72,13 @@ window.cssokoun.launchInspector = function() {
         return;
     }
 
-    // Reset state on launch
     inspectorActive = false;
     highlightBox.style.display = 'none';
 
-    const win = window.open('', 'cssokounInspector', 'width=380,height=550,menubar=no,toolbar=no,location=no,status=no');
+    const win = window.open('', '_blank', 'width=380,height=550,menubar=no,toolbar=no,location=no,status=no');
     window.cssokoun.inspectorWindow = win;
-
+    
+    win.document.open(); // Flush document stream
     win.document.write(`
         <!DOCTYPE html>
         <html>
@@ -123,7 +116,7 @@ window.cssokoun.launchInspector = function() {
         <body>
             <h4>🔍 Visual Inspector</h4>
             
-            <button id="tweak-toggle">🖱️ Selection Mode: OFF (Normal Mouse)</button>
+            <button id="tweak-toggle">🖱️ Selection Mode: OFF</button>
 
             <div id="tweak-target">No element selected...</div>
             
@@ -156,10 +149,10 @@ window.cssokoun.launchInspector = function() {
         inspectorActive = !inspectorActive;
         if (inspectorActive) {
             toggleBtn.className = 'active';
-            toggleBtn.innerText = '🎯 Selection Mode: ON (Click to lock)';
+            toggleBtn.innerText = '🎯 Selection Mode: ON';
         } else {
             toggleBtn.className = '';
-            toggleBtn.innerText = '🖱️ Selection Mode: OFF (Normal Mouse)';
+            toggleBtn.innerText = '🖱️ Selection Mode: OFF';
             highlightBox.style.display = 'none';
         }
     });
@@ -188,12 +181,10 @@ window.cssokoun.launchInspector = function() {
         tweakHistory.push(newCSS); GM.set('cssokoun_custom_css', newCSS);
         liveStyleNode.textContent = newCSS; 
         
-        // Sync to editor if open
         if (window.cssokoun.editorWindow && !window.cssokoun.editorWindow.closed) {
             const area = window.cssokoun.editorWindow.document.getElementById('css-area');
             if (area) area.value = newCSS;
         }
-        log('INFO', 'Applied & saved:', targetEl.innerText);
     }
 
     doc.getElementById('tweak-undo').addEventListener('click', () => {

@@ -1,5 +1,5 @@
 const log = (level, ...args) => window.cssokoun.log(level, 'sys-ui', ...args);
-log('INFO', 'Building Native Window Hub...');
+log('INFO', 'Building Bulletproof Native Window Hub...');
 
 window.cssokoun.hubWindow = null;
 
@@ -21,7 +21,8 @@ function injectUI() {
             return;
         }
 
-        const win = window.open('', 'cssokounHub', 'width=360,height=650,menubar=no,toolbar=no,location=no,status=no');
+        // Use _blank to prevent Chrome's ghost-window bug
+        const win = window.open('', '_blank', 'width=360,height=650,menubar=no,toolbar=no,location=no,status=no');
         window.cssokoun.hubWindow = win;
 
         const state = window.cssokoun.state.modules;
@@ -48,6 +49,7 @@ function injectUI() {
             });
         }
 
+        win.document.open(); // Flush document stream
         win.document.write(`
             <!DOCTYPE html>
             <html>
