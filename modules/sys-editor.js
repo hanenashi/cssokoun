@@ -22,7 +22,6 @@ function injectEditor() {
         const customCSS = GM.get('cssokoun_custom_css', '');
         const customJS = GM.get('cssokoun_custom_js', '');
 
-        // --- FIXED: GET ACTIVE THEME SOURCE FROM MEMORY ---
         let themeSource = '';
         if (window.cssokoun.activeThemeCache) {
             for (const [themeId, cssText] of Object.entries(window.cssokoun.activeThemeCache)) {
@@ -35,7 +34,6 @@ function injectEditor() {
         }
         if (!themeSource) themeSource = '/* No Base Theme Loaded (Vanilla Okoun) */';
 
-        // Open a blank native popup window 
         const win = window.open('', 'cssokounEditor', 'width=650,height=850,menubar=no,toolbar=no,location=no,status=no');
         window.cssokoun.editorWindow = win;
 
@@ -59,6 +57,7 @@ function injectEditor() {
                     button { border: none; padding: 12px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 14px; color: #fff; transition: opacity 0.2s; }
                     button:hover { opacity: 0.8; }
                     #btn-save { flex: 2; background: #050; }
+                    #btn-import { flex: 1; background: #d8b4e2; color: #000; }
                     #btn-export { flex: 1; background: #0078D7; }
                     #btn-clear { width: 100%; background: #500; font-size: 13px; padding: 10px; }
                 </style>
@@ -77,9 +76,12 @@ function injectEditor() {
                 
                 <div class="btn-row">
                     <button id="btn-save">💾 Save & Apply Live</button>
+                    <button id="btn-import">⬆️ Import .css</button>
                     <button id="btn-export">⬇️ Export .css</button>
                 </div>
                 <button id="btn-clear">🗑️ Clear All Overrides</button>
+                
+                <input type="file" id="file-import" accept=".css" style="display: none;">
             </body>
             </html>
         `);
@@ -87,6 +89,37 @@ function injectEditor() {
 
         const doc = win.document;
 
+        // --- NEW: IMPORT LOGIC ---
+        doc.getElementById('btn-import').addEventListener('click', () => {
+            doc.getElementById('file-import').click();
+        });
+
+        doc.getElementById('file-import').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const importedCSS = event.target.result;
+                const cssArea = doc.getElementById('css-area');
+                
+                // Append the imported file to whatever is currently in the box
+                let currentContent = cssArea.value.trim();
+                if (currentContent) currentContent += '\n\n';
+                
+                cssArea.value = currentContent + `/* --- Imported: ${file.name} --- */\n` + importedCSS;
+                
+                // Reset the file input so you can re-import the same file later if needed
+                e.target.value = '';
+                
+                // Automatically save and apply the new styles
+                doc.getElementById('btn-save').click();
+                log('INFO', `Successfully imported and applied: ${file.name}`);
+            };
+            reader.readAsText(file);
+        });
+
+        // --- SAVE LOGIC ---
         doc.getElementById('btn-save').addEventListener('click', () => {
             const newCSS = doc.getElementById('css-area').value;
             const newJS = doc.getElementById('js-area').value;
@@ -108,6 +141,7 @@ function injectEditor() {
             setTimeout(() => saveBtn.innerText = "💾 Save & Apply Live", 1500);
         });
 
+        // --- EXPORT LOGIC ---
         doc.getElementById('btn-export').addEventListener('click', () => {
             const cssContent = doc.getElementById('css-area').value;
             if (!cssContent.trim()) return win.alert('There is no CSS to export!');
@@ -124,6 +158,7 @@ function injectEditor() {
             URL.revokeObjectURL(url);
         });
 
+        // --- CLEAR LOGIC ---
         doc.getElementById('btn-clear').addEventListener('click', () => {
             if(win.confirm("Wipe all custom overrides? This cannot be undone.")) {
                 doc.getElementById('css-area').value = '';
@@ -132,6 +167,7 @@ function injectEditor() {
             }
         });
 
+        // --- TAB FORMATTING ---
         doc.querySelectorAll('#css-area, #js-area').forEach(el => {
             el.addEventListener('keydown', function(e) {
                 if (e.key == 'Tab') {
