@@ -6,8 +6,9 @@
     { "id": "sys-inspector", "file": "modules/sys-inspector.js", "required": true }
   ],
   "themes": [
-    { "id": "theme-mobile", "name": "Mobile Theme (CSS)", "file": "modules/theme-mobile.css" },
-    { "id": "theme-mageo", "name": "MAGEO originál (CSS)", "file": "modules/theme-mageo.css" }
+    { "id": "theme-mobile", "name": "Mobile Theme (CSS)", "file": "themes/theme-mobile.css" },
+    { "id": "theme-mageo", "name": "MAGEO originál (CSS)", "file": "themes/theme-mageo.css" },
+    { "id": "theme-kostej3", "name": "Kostej3 Antiquewhite (CSS)", "file": "themes/theme-kostej3.css" }
   ],
   "tweaks": [
     { "id": "mobile-viewport", "name": "📱 Force Mobile Viewport (JS)", "file": "modules/theme-mobile.js" }
