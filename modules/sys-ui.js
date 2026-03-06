@@ -7,11 +7,20 @@ function injectUI() {
     const menu = document.querySelector('.head .menu');
     if (!menu) return log('ERROR', 'Could not find .head .menu');
 
+    // Reverted back to an anchor tag!
     const hubBtn = document.createElement('a');
     hubBtn.href = '#';
     hubBtn.innerHTML = '⚙️';
-    hubBtn.style.cssText = 'margin-left: 10px; color: var(--cso-accent, #007acc); text-decoration: none !important; border: none !important; box-shadow: none !important; font-weight: bold; transition: color 0.2s; font-size: 16px;';    menu.appendChild(hubBtn);
+    hubBtn.title = 'cssokoun Hub';
+    hubBtn.style.cssText = 'margin-left: 10px; color: var(--cso-accent, #007acc); text-decoration: none !important; border: none !important; box-shadow: none !important; font-weight: bold; transition: transform 0.2s; font-size: 16px; display: inline-block; user-select: none;';
+    
+    // Kept the nice hover pop effect
+    hubBtn.addEventListener('mouseover', () => hubBtn.style.transform = 'scale(1.2)');
+    hubBtn.addEventListener('mouseout', () => hubBtn.style.transform = 'scale(1)');
+    
+    menu.appendChild(hubBtn);
 
+    // --- Message Listener for the Blob Window ---
     window.addEventListener('message', async (e) => {
         if (!e.data || e.data.app !== 'cssokoun') return;
         
