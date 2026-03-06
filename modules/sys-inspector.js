@@ -178,8 +178,14 @@ function initInspector() {
     };
     compareBtn.addEventListener('mouseup', restoreStyles); compareBtn.addEventListener('mouseleave', restoreStyles); 
 
-    function syncEditor(css) { const editorArea = document.getElementById('cssokoun-edit-css'); if (editorArea) editorArea.value = css; }
-
+	function syncEditor(css) {
+			// Send updates to the native popup window if it is open
+			if (window.cssokoun.editorWindow && !window.cssokoun.editorWindow.closed) {
+				const area = window.cssokoun.editorWindow.document.getElementById('css-area');
+				if (area) area.value = css;
+			}
+    }
+	
     return true;
 }
 
