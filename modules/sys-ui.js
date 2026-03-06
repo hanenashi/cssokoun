@@ -7,20 +7,17 @@ function injectUI() {
     const menu = document.querySelector('.head .menu');
     if (!menu) return log('ERROR', 'Could not find .head .menu');
 
-    // Reverted back to an anchor tag!
     const hubBtn = document.createElement('a');
     hubBtn.href = '#';
     hubBtn.innerHTML = '⚙️';
     hubBtn.title = 'cssokoun Hub';
     hubBtn.style.cssText = 'margin-left: 10px; color: var(--cso-accent, #007acc); text-decoration: none !important; border: none !important; box-shadow: none !important; font-weight: bold; transition: transform 0.2s; font-size: 16px; display: inline-block; user-select: none;';
     
-    // Kept the nice hover pop effect
     hubBtn.addEventListener('mouseover', () => hubBtn.style.transform = 'scale(1.2)');
     hubBtn.addEventListener('mouseout', () => hubBtn.style.transform = 'scale(1)');
     
     menu.appendChild(hubBtn);
 
-    // --- Message Listener for the Blob Window ---
     window.addEventListener('message', async (e) => {
         if (!e.data || e.data.app !== 'cssokoun') return;
         
@@ -31,9 +28,17 @@ function injectUI() {
             if (e.data.theme) finalStates[e.data.theme] = true;
             
             await Promise.resolve(GM.set('cssokoun_modules', finalStates));
-            log('INFO', 'Preferences saved via postMessage. Reloading...');
+            log('INFO', 'Preferences saved via postMessage. Safely reloading...');
             
-            window.location.href = window.location.pathname + window.location.search;
+            // --- SAFE RELOAD LOGIC ---
+            if (window.location.pathname.endsWith('.do')) {
+                // Jsme na action endpointu (POST). Nesmíme dělat reload.
+                // Vrátíme se na předchozí stránku (klub), nebo na homepage.
+                window.location.replace(document.referrer || '/');
+            } else {
+                // Bezpečný standardní reload s vyčištěním případných #hashů
+                window.location.href = window.location.pathname + window.location.search;
+            }
         } else if (e.data.action === 'LAUNCH_EDITOR') {
             if (window.cssokoun.launchEditor) window.cssokoun.launchEditor();
         } else if (e.data.action === 'LAUNCH_INSPECTOR') {
