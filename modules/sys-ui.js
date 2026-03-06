@@ -13,7 +13,6 @@ function injectUI() {
     hubBtn.style.cssText = 'margin-left: 10px; color: var(--cso-accent, #007acc); text-decoration: none; font-weight: bold; transition: color 0.2s; font-size: 16px;';
     menu.appendChild(hubBtn);
 
-    // --- Message Listener for the Blob Window ---
     window.addEventListener('message', async (e) => {
         if (!e.data || e.data.app !== 'cssokoun') return;
         
@@ -23,11 +22,9 @@ function injectUI() {
             manifest.themes.forEach(mod => finalStates[mod.id] = false);
             if (e.data.theme) finalStates[e.data.theme] = true;
             
-            // Await the save to ensure Firefox writes it before reloading
             await Promise.resolve(GM.set('cssokoun_modules', finalStates));
             log('INFO', 'Preferences saved via postMessage. Reloading...');
             
-            // Reload safely (avoids "Resubmit Form" warnings on POST pages)
             window.location.href = window.location.pathname + window.location.search;
         } else if (e.data.action === 'LAUNCH_EDITOR') {
             if (window.cssokoun.launchEditor) window.cssokoun.launchEditor();
@@ -112,6 +109,7 @@ function injectUI() {
                         document.querySelectorAll('.cssokoun-sys-toggle').forEach(chk => { states[chk.dataset.id] = chk.checked; });
                         const theme = document.getElementById('cssokoun-theme-dropdown').value;
                         window.opener.postMessage({ app: 'cssokoun', action: 'SAVE_CONFIG', states, theme }, '*');
+                        window.close(); // Clean up the ghost window before parent reloads!
                     });
                     document.getElementById('btn-editor').addEventListener('click', () => window.opener.postMessage({ app: 'cssokoun', action: 'LAUNCH_EDITOR' }, '*'));
                     document.getElementById('btn-inspector').addEventListener('click', () => window.opener.postMessage({ app: 'cssokoun', action: 'LAUNCH_INSPECTOR' }, '*'));
@@ -122,7 +120,6 @@ function injectUI() {
         
         const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
-        // By naming it 'cssokounHub' instead of '_blank', we recycle the existing window!
         window.cssokoun.hubWindow = window.open(url, 'cssokounHub', 'width=360,height=650,menubar=no,toolbar=no,location=no,status=no');
     });
 }
