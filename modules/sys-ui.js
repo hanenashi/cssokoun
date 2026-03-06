@@ -1,5 +1,5 @@
 const log = (level, ...args) => window.cssokoun.log(level, 'sys-ui', ...args);
-log('INFO', 'Building Draggable Responsive UI Panel...');
+log('INFO', 'Building Draggable Responsive UI Panel with Dropdown...');
 
 function injectUI() {
     const menu = document.querySelector('.head .menu');
@@ -27,12 +27,13 @@ function injectUI() {
         .cssokoun-content { padding: 15px; overflow-y: auto; flex-grow: 1; }
         .cssokoun-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #222; font-size: 16px; }
         .cssokoun-toggle-row input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; cursor: pointer; }
+        .cssokoun-select { width: 100%; padding: 10px; background: #222; color: #0ff; border: 1px solid #444; border-radius: 4px; font-size: 16px; margin-bottom: 15px; outline: none; cursor: pointer; }
         .cssokoun-btn { width: 100%; padding: 12px; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; margin-bottom: 10px; cursor: pointer; }
 
         @media (max-width: 768px) {
             #cssokoun-ui-panel { bottom: -100%; left: 0; width: 100%; height: 75vh; border-top: 2px solid #0ff; border-radius: 15px 15px 0 0; transition: bottom 0.3s ease; }
             #cssokoun-ui-panel.active { bottom: 0; }
-            .cssokoun-header { cursor: default; } /* No dragging on mobile */
+            .cssokoun-header { cursor: default; } 
         }
         @media (min-width: 769px) {
             #cssokoun-ui-panel { top: 50px; right: 20px; width: 350px; max-height: 80vh; border: 1px solid #333; border-top: 2px solid #0ff; border-radius: 8px; display: none; }
@@ -48,48 +49,60 @@ function injectUI() {
             <button class="cssokoun-close-btn" id="cssokoun-close">×</button>
         </div>
         <div class="cssokoun-content">
-            <h4 style="margin-top:0; color:#aaa; border-bottom: 1px solid #333; padding-bottom: 5px;">Modules</h4>
+            <h4 style="margin-top:0; color:#aaa; border-bottom: 1px solid #333; padding-bottom: 5px;">Base Theme</h4>
+            <select id="cssokoun-theme-dropdown" class="cssokoun-select">
+                <option value="">-- No Base Theme (Vanilla) --</option>
+            </select>
+
+            <h4 style="margin-top:15px; color:#aaa; border-bottom: 1px solid #333; padding-bottom: 5px;">Behavioral Tweaks</h4>
             <div id="cssokoun-module-list" style="margin-bottom: 15px;"></div>
             
-            <button id="cssokoun-save" class="cssokoun-btn" style="background: #050;">💾 Save Toggles & Reload</button>
-            <div id="cssokoun-editor-hook"></div> <button id="cssokoun-inspect" class="cssokoun-btn" style="background: #0078D7;">🔍 Visual Inspector</button>
+            <button id="cssokoun-save" class="cssokoun-btn" style="background: #050;">💾 Save Configuration & Reload</button>
+            <div id="cssokoun-editor-hook"></div>
+            <button id="cssokoun-inspect" class="cssokoun-btn" style="background: #0078D7;">🔍 Visual Inspector</button>
         </div>
     `;
     panel.innerHTML = html;
     document.body.appendChild(panel);
 
-    // Populate Modules
-    const modList = document.getElementById('cssokoun-module-list');
     const state = window.cssokoun.state.modules;
     const manifest = window.cssokoun.manifest;
 
-    const renderToggle = (mod, type) => {
-        const checked = state[mod.id] ? 'checked' : '';
-        return `
-            <div class="cssokoun-toggle-row">
-                <label for="chk-${mod.id}" style="flex-grow: 1; cursor: pointer;">${mod.name || mod.id} <small style="color:#666;">(${type})</small></label>
-                <input type="checkbox" id="chk-${mod.id}" class="cssokoun-sys-toggle" data-id="${mod.id}" ${checked}>
-            </div>
-        `;
-    };
+    // Build Themes Dropdown
+    const themeSelect = document.getElementById('cssokoun-theme-dropdown');
+    if (manifest.themes) {
+        manifest.themes.forEach(mod => {
+            const option = document.createElement('option');
+            option.value = mod.id;
+            option.textContent = mod.name;
+            if (state[mod.id]) option.selected = true; // Auto-select active theme
+            themeSelect.appendChild(option);
+        });
+    }
 
-    if (manifest.themes) manifest.themes.forEach(mod => modList.innerHTML += renderToggle(mod, 'CSS'));
-    if (manifest.tweaks) manifest.tweaks.forEach(mod => modList.innerHTML += renderToggle(mod, 'JS'));
+    // Build Tweaks Checkboxes
+    const modList = document.getElementById('cssokoun-module-list');
+    if (manifest.tweaks) {
+        manifest.tweaks.forEach(mod => {
+            const checked = state[mod.id] ? 'checked' : '';
+            modList.innerHTML += `
+                <div class="cssokoun-toggle-row">
+                    <label for="chk-${mod.id}" style="flex-grow: 1; cursor: pointer;">${mod.name}</label>
+                    <input type="checkbox" id="chk-${mod.id}" class="cssokoun-sys-toggle" data-id="${mod.id}" ${checked}>
+                </div>
+            `;
+        });
+    }
 
-    // --- DRAG LOGIC FOR HUB ---
+    // --- DRAG LOGIC ---
     const header = document.getElementById('cssokoun-ui-header');
     let isDragging = false, startX, startY, initialX, initialY;
 
     header.addEventListener('mousedown', (e) => {
-        if (window.innerWidth <= 768) return; // Prevent drag on mobile bottom sheet
+        if (window.innerWidth <= 768) return; 
         isDragging = true; startX = e.clientX; startY = e.clientY;
         initialX = panel.offsetLeft; initialY = panel.offsetTop;
-        
-        // Lock positioning to Left/Top so dragging doesn't jump
-        panel.style.right = 'auto';
-        panel.style.left = initialX + 'px';
-        panel.style.top = initialY + 'px';
-        
+        panel.style.right = 'auto'; panel.style.left = initialX + 'px'; panel.style.top = initialY + 'px';
         header.style.cursor = 'grabbing';
     });
     document.addEventListener('mousemove', (e) => {
@@ -97,17 +110,23 @@ function injectUI() {
         panel.style.left = (initialX + e.clientX - startX) + 'px';
         panel.style.top = (initialY + e.clientY - startY) + 'px';
     });
-    document.addEventListener('mouseup', () => { 
-        if (isDragging) { isDragging = false; header.style.cursor = 'grab'; } 
-    });
+    document.addEventListener('mouseup', () => { if (isDragging) { isDragging = false; header.style.cursor = 'grab'; } });
 
-    // Toggle Handlers
+    // --- BUTTON HANDLERS ---
     hubBtn.addEventListener('click', (e) => { e.preventDefault(); panel.classList.toggle('active'); });
     document.getElementById('cssokoun-close').addEventListener('click', () => panel.classList.remove('active'));
 
     document.getElementById('cssokoun-save').addEventListener('click', () => {
         const newStates = {};
+        
+        // Save Tweaks
         document.querySelectorAll('.cssokoun-sys-toggle').forEach(chk => { newStates[chk.dataset.id] = chk.checked; });
+        
+        // Save Theme (wipe all themes false, then set chosen to true)
+        manifest.themes.forEach(mod => newStates[mod.id] = false);
+        const selectedTheme = document.getElementById('cssokoun-theme-dropdown').value;
+        if (selectedTheme) newStates[selectedTheme] = true;
+
         GM.set('cssokoun_modules', newStates);
         log('INFO', 'Preferences saved. Reloading...');
         window.location.reload();

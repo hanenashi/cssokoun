@@ -1,0 +1,53 @@
+/* MAGEO (originál) port pro cssokoun */
+body {font-size: 0.9em}
+body, .content *, .head h1 a:before {font-family: serif}
+#body {max-width: 100% !important; margin: -0.5em -22px !important; padding: 0.5em 22px !important}
+body {background-color: #A0D0D0}
+#body {background-color: #E7F3F3}
+a, a:visited {color: #008080}
+a:hover {color: #800080; text-decoration: underline}
+#infosBox.messages, .infosBox.messages {background-color: transparent; border-color: #A0D0D0}
+
+h1 a, h1 a:visited, h2 a, h2 a:visited, h3 a, h3 a:visited, .main .explore .top>li>a {color: #010101}
+h1 a:hover, h2 a:hover, h3 a:hover, .nav h1 a:hover, .main .explore .top>li>a:hover {color: #010101; text-decoration: underline}
+
+.room .item.new, .room .item.new.o-first {background-color: #F7FEFE; border: none; border-bottom: solid 1px #80B0B0}
+.room .item.hilited, .room .item.hilited.new {border: solid 2px #80B0B0}  
+.preview .item {background-color: #E7F3F3}
+
+.head .menu .new>a {background-color: inherit;  border: none; color: red !important}
+.item b a  {color: red}
+
+.room .item {border-bottom: 1px solid #A0D0D0}
+.item .actions {border-top: 1px solid #CCCCCC}
+.room .articles {border-top: 1px solid #A0D0D0}  
+
+.welcome, .item .content .confirm.reply {background-color: inherit}
+.user.ico, .user .ico {background-color:inherit; border:none}
+.descr, .hpdescr {display:none !important}
+.item .meta .permalink {display: inline !important; position:initial; left: 0px !important}
+.actions .share {display:none !important}
+.head .menu {width:100%}
+.main .main {width:100%}
+
+.head .menu a, .head .menu a:visited, .head .user a, .head .user a:visited, .footer a, .footer a:visited, .item.hover .actions a, .item.hover .actions span.prev a.prev {color: #101010}
+.head .menu a:hover, .head .user a:hover {text-decoration: underline}
+.settings {color: #010101}
+.settings a, .settings a:visited {color: #008080}
+
+.item .actions.replyForm a.reply, .expbutton .post.content, .actions.replyForm .post.content {background-color: #A0D0D0; border: 1px solid #80B0B0}
+.expbutton .hd {background-color: #80B0B0; border: 1px solid #80B0B0}
+.replyform textarea, .post.content textarea, .post.content input {font-family: courier !important; font-size: small !important}
+
+.head h1 a {background: none; visibility: hidden}
+.head h1 a:before {content: "MAGEO"; visibility: visible; display: block; font-size: large}
+
+div.yui-u.ctx {float: left !important}
+div.yui-u.yui-ge.first.main {width: 100% !important}
+.main .ctx p {display: none}
+.main .ctx {width: 100%; text-align: right}
+.main .ctx ul, .main .ctx li {display: inline}
+#adwrapper-lb, #adwrapper-bs {display:none !important}
+
+.main .first h2 a::before {content: "auditorium - "}
+form>span:first-child button.submit {display:none}
