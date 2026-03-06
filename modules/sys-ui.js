@@ -1,5 +1,5 @@
 const log = (level, ...args) => window.cssokoun.log(level, 'sys-ui', ...args);
-log('INFO', 'Building Blob-Window Hub...');
+log('INFO', 'Building UTF-8 Blob-Window Hub...');
 
 window.cssokoun.hubWindow = null;
 
@@ -14,7 +14,7 @@ function injectUI() {
     menu.appendChild(hubBtn);
 
     // --- Message Listener for the Blob Window ---
-    window.addEventListener('message', (e) => {
+    window.addEventListener('message', async (e) => {
         if (!e.data || e.data.app !== 'cssokoun') return;
         
         if (e.data.action === 'SAVE_CONFIG') {
@@ -23,9 +23,12 @@ function injectUI() {
             manifest.themes.forEach(mod => finalStates[mod.id] = false);
             if (e.data.theme) finalStates[e.data.theme] = true;
             
-            GM.set('cssokoun_modules', finalStates);
+            // Await the save to ensure Firefox writes it before reloading
+            await Promise.resolve(GM.set('cssokoun_modules', finalStates));
             log('INFO', 'Preferences saved via postMessage. Reloading...');
-            window.location.reload();
+            
+            // Reload safely (avoids "Resubmit Form" warnings on POST pages)
+            window.location.href = window.location.pathname + window.location.search;
         } else if (e.data.action === 'LAUNCH_EDITOR') {
             if (window.cssokoun.launchEditor) window.cssokoun.launchEditor();
         } else if (e.data.action === 'LAUNCH_INSPECTOR') {
@@ -65,6 +68,7 @@ function injectUI() {
             <!DOCTYPE html>
             <html>
             <head>
+                <meta charset="UTF-8">
                 <title>cssokoun Hub</title>
                 <style>
                     :root {
@@ -116,9 +120,10 @@ function injectUI() {
             </html>
         `;
         
-        const blob = new Blob([html], { type: 'text/html' });
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
-        window.cssokoun.hubWindow = window.open(url, '_blank', 'width=360,height=650,menubar=no,toolbar=no,location=no,status=no');
+        // By naming it 'cssokounHub' instead of '_blank', we recycle the existing window!
+        window.cssokoun.hubWindow = window.open(url, 'cssokounHub', 'width=360,height=650,menubar=no,toolbar=no,location=no,status=no');
     });
 }
 
