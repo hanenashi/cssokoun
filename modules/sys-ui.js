@@ -10,8 +10,7 @@ function injectUI() {
     const hubBtn = document.createElement('a');
     hubBtn.href = '#';
     hubBtn.innerHTML = '⚙️';
-    hubBtn.style.cssText = 'margin-left: 10px; color: var(--cso-accent, #007acc); text-decoration: none; font-weight: bold; transition: color 0.2s; font-size: 16px;';
-    menu.appendChild(hubBtn);
+    hubBtn.style.cssText = 'margin-left: 10px; color: var(--cso-accent, #007acc); text-decoration: none !important; border: none !important; box-shadow: none !important; font-weight: bold; transition: color 0.2s; font-size: 16px;';    menu.appendChild(hubBtn);
 
     window.addEventListener('message', async (e) => {
         if (!e.data || e.data.app !== 'cssokoun') return;
