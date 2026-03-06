@@ -1,5 +1,5 @@
 const log = (level, ...args) => window.cssokoun.log(level, 'sys-ui', ...args);
-log('INFO', 'Building Draggable Responsive UI Panel with Dropdown...');
+log('INFO', 'Building Professional Draggable UI Panel...');
 
 function injectUI() {
     const menu = document.querySelector('.head .menu');
@@ -7,8 +7,8 @@ function injectUI() {
 
     const hubBtn = document.createElement('a');
     hubBtn.href = '#';
-    hubBtn.innerHTML = '🎨 <b>cssokoun</b>';
-    hubBtn.style.cssText = 'margin-left: 10px; color: #0ff; text-decoration: none;';
+    hubBtn.innerHTML = '⚙️ <b>cssokoun</b>';
+    hubBtn.style.cssText = 'margin-left: 10px; color: var(--cso-accent, #007acc); text-decoration: none; transition: color 0.2s;';
     menu.appendChild(hubBtn);
 
     const panel = document.createElement('div');
@@ -16,27 +16,68 @@ function injectUI() {
     
     const uiStyle = document.createElement('style');
     uiStyle.textContent = `
-        #cssokoun-ui-panel {
-            position: fixed; background: #111; color: #eee; z-index: 999999;
-            font-family: sans-serif; display: flex; flex-direction: column;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+        :root {
+            --cso-bg-base: #1e1e1e;
+            --cso-bg-panel: #252526;
+            --cso-bg-input: #3c3c3c;
+            --cso-border: #454545;
+            --cso-text-main: #cccccc;
+            --cso-text-bright: #ffffff;
+            --cso-text-muted: #888888;
+            --cso-accent: #007acc;
+            --cso-accent-hover: #0098ff;
+            --cso-danger: #d16969;
+            --cso-success: #6A9955;
+            --cso-warning: #d7ba7d;
+            --cso-radius: 6px;
+            --cso-shadow: 0 12px 32px rgba(0,0,0,0.6);
+            --cso-font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --cso-font-mono: Consolas, 'Courier New', monospace;
         }
-        .cssokoun-header { padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; cursor: grab; }
-        .cssokoun-header h3 { margin: 0; font-size: 18px; color: #0ff; pointer-events: none; }
-        .cssokoun-close-btn { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
-        .cssokoun-content { padding: 15px; overflow-y: auto; flex-grow: 1; }
-        .cssokoun-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #222; font-size: 16px; }
-        .cssokoun-toggle-row input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; cursor: pointer; }
-        .cssokoun-select { width: 100%; padding: 10px; background: #222; color: #0ff; border: 1px solid #444; border-radius: 4px; font-size: 16px; margin-bottom: 15px; outline: none; cursor: pointer; }
-        .cssokoun-btn { width: 100%; padding: 12px; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; margin-bottom: 10px; cursor: pointer; }
+
+        #cssokoun-ui-panel {
+            position: fixed; background: var(--cso-bg-base); color: var(--cso-text-main); z-index: 999999;
+            font-family: var(--cso-font-sans); display: flex; flex-direction: column;
+            box-shadow: var(--cso-shadow);
+        }
+        
+        #cssokoun-ui-panel * { box-sizing: border-box; }
+        
+        /* Custom Scrollbars */
+        #cssokoun-ui-panel ::-webkit-scrollbar { width: 8px; }
+        #cssokoun-ui-panel ::-webkit-scrollbar-track { background: var(--cso-bg-base); }
+        #cssokoun-ui-panel ::-webkit-scrollbar-thumb { background: var(--cso-border); border-radius: 4px; }
+        #cssokoun-ui-panel ::-webkit-scrollbar-thumb:hover { background: var(--cso-text-muted); }
+
+        .cssokoun-header { padding: 12px 16px; border-bottom: 1px solid var(--cso-border); display: flex; justify-content: space-between; align-items: center; background: var(--cso-bg-panel); cursor: grab; }
+        .cssokoun-header h3 { margin: 0; font-size: 15px; color: var(--cso-text-bright); font-weight: 600; pointer-events: none; }
+        .cssokoun-close-btn { background: none; border: none; color: var(--cso-text-muted); font-size: 20px; cursor: pointer; transition: color 0.2s; padding: 0; line-height: 1; }
+        .cssokoun-close-btn:hover { color: var(--cso-danger); }
+        
+        .cssokoun-content { padding: 16px; overflow-y: auto; flex-grow: 1; }
+        .cssokoun-section-title { margin: 0 0 10px 0; color: var(--cso-text-bright); border-bottom: 1px solid var(--cso-border); padding-bottom: 6px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .cssokoun-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; border-radius: 4px; transition: background 0.2s; }
+        .cssokoun-toggle-row input[type="checkbox"] { transform: scale(1.3); margin-right: 5px; cursor: pointer; accent-color: var(--cso-accent); }
+        
+        .cssokoun-select { width: 100%; padding: 8px 10px; background: var(--cso-bg-input); color: var(--cso-text-bright); border: 1px solid var(--cso-border); border-radius: var(--cso-radius); font-size: 14px; margin-bottom: 20px; outline: none; cursor: pointer; font-family: var(--cso-font-sans); }
+        .cssokoun-select:focus { border-color: var(--cso-accent); }
+        
+        .cssokoun-btn { width: 100%; padding: 10px; color: var(--cso-text-bright); border: 1px solid transparent; border-radius: var(--cso-radius); font-size: 13px; font-weight: 600; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; font-family: var(--cso-font-sans); display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .cssokoun-btn-primary { background: var(--cso-accent); }
+        .cssokoun-btn-primary:hover { background: var(--cso-accent-hover); }
+        .cssokoun-btn-success { background: var(--cso-success); }
+        .cssokoun-btn-success:hover { background: #5a8247; }
+        .cssokoun-btn-secondary { background: var(--cso-bg-input); border-color: var(--cso-border); }
+        .cssokoun-btn-secondary:hover { background: #4a4a4a; }
 
         @media (max-width: 768px) {
-            #cssokoun-ui-panel { bottom: -100%; left: 0; width: 100%; height: 75vh; border-top: 2px solid #0ff; border-radius: 15px 15px 0 0; transition: bottom 0.3s ease; }
+            #cssokoun-ui-panel { bottom: -100%; left: 0; width: 100%; height: 75vh; border-top: 2px solid var(--cso-accent); border-radius: 15px 15px 0 0; transition: bottom 0.3s ease; }
             #cssokoun-ui-panel.active { bottom: 0; }
-            .cssokoun-header { cursor: default; } 
+            .cssokoun-header { cursor: default; border-radius: 15px 15px 0 0; } 
         }
         @media (min-width: 769px) {
-            #cssokoun-ui-panel { top: 50px; right: 20px; width: 350px; max-height: 80vh; border: 1px solid #333; border-top: 2px solid #0ff; border-radius: 8px; display: none; }
+            #cssokoun-ui-panel { top: 50px; right: 20px; width: 340px; max-height: 80vh; border: 1px solid var(--cso-border); border-top: 3px solid var(--cso-accent); border-radius: var(--cso-radius); display: none; }
             #cssokoun-ui-panel.active { display: flex; }
             .cssokoun-toggle-row:hover { background: rgba(255,255,255,0.05); } 
         }
@@ -45,21 +86,21 @@ function injectUI() {
 
     let html = `
         <div class="cssokoun-header" id="cssokoun-ui-header">
-            <h3>🎨 cssokoun Hub</h3>
+            <h3>⚙️ cssokoun Hub</h3>
             <button class="cssokoun-close-btn" id="cssokoun-close">×</button>
         </div>
         <div class="cssokoun-content">
-            <h4 style="margin-top:0; color:#aaa; border-bottom: 1px solid #333; padding-bottom: 5px;">Base Theme</h4>
+            <h4 class="cssokoun-section-title">Base Theme</h4>
             <select id="cssokoun-theme-dropdown" class="cssokoun-select">
-                <option value="">-- No Base Theme (Vanilla) --</option>
+                <option value="">-- Vanilla Okoun --</option>
             </select>
 
-            <h4 style="margin-top:15px; color:#aaa; border-bottom: 1px solid #333; padding-bottom: 5px;">Behavioral Tweaks</h4>
-            <div id="cssokoun-module-list" style="margin-bottom: 15px;"></div>
+            <h4 class="cssokoun-section-title" style="margin-top: 10px;">Behavioral Tweaks</h4>
+            <div id="cssokoun-module-list" style="margin-bottom: 20px;"></div>
             
-            <button id="cssokoun-save" class="cssokoun-btn" style="background: #050;">💾 Save Configuration & Reload</button>
+            <button id="cssokoun-save" class="cssokoun-btn cssokoun-btn-success">💾 Save Configuration</button>
             <div id="cssokoun-editor-hook"></div>
-            <button id="cssokoun-inspect" class="cssokoun-btn" style="background: #0078D7;">🔍 Visual Inspector</button>
+            <button id="cssokoun-inspect" class="cssokoun-btn cssokoun-btn-secondary">🔍 Visual Inspector</button>
         </div>
     `;
     panel.innerHTML = html;
@@ -68,19 +109,17 @@ function injectUI() {
     const state = window.cssokoun.state.modules;
     const manifest = window.cssokoun.manifest;
 
-    // Build Themes Dropdown
     const themeSelect = document.getElementById('cssokoun-theme-dropdown');
     if (manifest.themes) {
         manifest.themes.forEach(mod => {
             const option = document.createElement('option');
             option.value = mod.id;
             option.textContent = mod.name;
-            if (state[mod.id]) option.selected = true; // Auto-select active theme
+            if (state[mod.id]) option.selected = true;
             themeSelect.appendChild(option);
         });
     }
 
-    // Build Tweaks Checkboxes
     const modList = document.getElementById('cssokoun-module-list');
     if (manifest.tweaks) {
         manifest.tweaks.forEach(mod => {
@@ -94,7 +133,6 @@ function injectUI() {
         });
     }
 
-    // --- DRAG LOGIC ---
     const header = document.getElementById('cssokoun-ui-header');
     let isDragging = false, startX, startY, initialX, initialY;
 
@@ -112,17 +150,12 @@ function injectUI() {
     });
     document.addEventListener('mouseup', () => { if (isDragging) { isDragging = false; header.style.cursor = 'grab'; } });
 
-    // --- BUTTON HANDLERS ---
     hubBtn.addEventListener('click', (e) => { e.preventDefault(); panel.classList.toggle('active'); });
     document.getElementById('cssokoun-close').addEventListener('click', () => panel.classList.remove('active'));
 
     document.getElementById('cssokoun-save').addEventListener('click', () => {
         const newStates = {};
-        
-        // Save Tweaks
         document.querySelectorAll('.cssokoun-sys-toggle').forEach(chk => { newStates[chk.dataset.id] = chk.checked; });
-        
-        // Save Theme (wipe all themes false, then set chosen to true)
         manifest.themes.forEach(mod => newStates[mod.id] = false);
         const selectedTheme = document.getElementById('cssokoun-theme-dropdown').value;
         if (selectedTheme) newStates[selectedTheme] = true;
