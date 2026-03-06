@@ -9,7 +9,7 @@ function injectUI() {
 
     const hubBtn = document.createElement('a');
     hubBtn.href = '#';
-    hubBtn.innerHTML = '⚙️ <b>cssokoun</b>';
+    hubBtn.innerHTML = '⚙️';
     hubBtn.style.cssText = 'margin-left: 10px; color: var(--cso-accent, #007acc); text-decoration: none; font-weight: bold; transition: color 0.2s;';
     menu.appendChild(hubBtn);
 
