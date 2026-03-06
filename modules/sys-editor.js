@@ -22,19 +22,20 @@ function injectEditor() {
         const customCSS = GM.get('cssokoun_custom_css', '');
         const customJS = GM.get('cssokoun_custom_js', '');
 
-        // --- NEW: SCRAPE ACTIVE THEME SOURCE ---
+        // --- FIXED: GET ACTIVE THEME SOURCE FROM MEMORY ---
         let themeSource = '';
-        document.querySelectorAll('style[id^="cssokoun-theme-"]').forEach(el => {
-            const themeName = el.id.replace('cssokoun-theme-', '');
-            themeSource += `/* =========================================\n`;
-            themeSource += `   LOADED THEME: ${themeName}\n`;
-            themeSource += `   (Read-only. Copy selectors from here to tweak below)\n`;
-            themeSource += `   ========================================= */\n\n`;
-            themeSource += el.textContent + '\n\n';
-        });
+        if (window.cssokoun.activeThemeCache) {
+            for (const [themeId, cssText] of Object.entries(window.cssokoun.activeThemeCache)) {
+                themeSource += `/* =========================================\n`;
+                themeSource += `   LOADED THEME: ${themeId}\n`;
+                themeSource += `   (Read-only. Copy selectors from here to tweak below)\n`;
+                themeSource += `   ========================================= */\n\n`;
+                themeSource += cssText + '\n\n';
+            }
+        }
         if (!themeSource) themeSource = '/* No Base Theme Loaded (Vanilla Okoun) */';
 
-        // Open a blank native popup window (Made slightly taller to fit 3 boxes)
+        // Open a blank native popup window 
         const win = window.open('', 'cssokounEditor', 'width=650,height=850,menubar=no,toolbar=no,location=no,status=no');
         window.cssokoun.editorWindow = win;
 

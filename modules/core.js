@@ -13,7 +13,7 @@ const coreLog = (level, ...args) => window.cssokoun.log(level, 'core', ...args);
 
 coreLog('INFO', 'Core initialized. Dumb logger active.');
 
-// --- URL ROUTER (Replaces @-moz-document) ---
+// --- URL ROUTER ---
 (function injectRoutingClasses() {
     const path = window.location.pathname.split('/').filter(Boolean);
     if (path.length === 0) document.body.classList.add('route-home');
@@ -49,7 +49,6 @@ GM.fetch({
 function loadModules(manifest) {
     const cacheBuster = `?v=${Date.now()}`;
 
-    // Upgraded CSS Injector using Tampermonkey's maximum authority
     const injectCSS = (url, id) => {
         coreLog('SNIFF', `Fetching CSS: ${id}`);
         GM.fetch({
@@ -59,6 +58,11 @@ function loadModules(manifest) {
                 if (res.status === 200) {
                     try {
                         GM.addStyle(res.responseText);
+                        
+                        // NEW: Store the raw CSS in memory for the Live Editor to read!
+                        window.cssokoun.activeThemeCache = window.cssokoun.activeThemeCache || {};
+                        window.cssokoun.activeThemeCache[id] = res.responseText;
+                        
                         coreLog('INFO', `Injected CSS theme: ${id}`);
                     } catch (e) {
                         coreLog('ERROR', `Failed to inject CSS: ${id}`, e);
