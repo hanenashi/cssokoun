@@ -12,13 +12,15 @@ const coreLog = (level, ...args) => window.cssokoun.log(level, 'core', ...args);
 
 coreLog('INFO', 'Core initialized. Smart Caching & Anti-FOUC active.');
 
+// --- FIXED: Use documentElement (<html>) instead of <body> to prevent document-start crashes ---
 (function injectRoutingClasses() {
+    const root = document.documentElement; 
     const path = window.location.pathname.split('/').filter(Boolean);
-    if (path.length === 0) document.body.classList.add('route-home');
-    path.forEach((p, i) => document.body.classList.add('route-' + path.slice(0, i + 1).join('-').replace(/[^a-z0-9-]/gi, '')));
+    if (path.length === 0) root.classList.add('route-home');
+    path.forEach((p, i) => root.classList.add('route-' + path.slice(0, i + 1).join('-').replace(/[^a-z0-9-]/gi, '')));
     if (window.location.search) {
         const params = new URLSearchParams(window.location.search);
-        for (const [key, val] of params) document.body.classList.add(`query-${key}-${val}`.replace(/[^a-z0-9-]/gi, ''));
+        for (const [key, val] of params) root.classList.add(`query-${key}-${val}`.replace(/[^a-z0-9-]/gi, ''));
     }
 })();
 
@@ -63,7 +65,7 @@ function loadModules(manifest) {
             GM.addStyle(cachedCSS);
             window.cssokoun.activeThemeCache[id] = cachedCSS;
         } else {
-            pendingThemes++; // Tell the uncloaker to wait for the network fetch
+            pendingThemes++;
         }
 
         GM.fetch({
@@ -118,9 +120,9 @@ function loadModules(manifest) {
         let liveStyleNode = document.createElement('style');
         liveStyleNode.id = 'cssokoun-live-styles';
         liveStyleNode.textContent = customCSS;
-        document.head.appendChild(liveStyleNode);
+        // Safe injection at document-start
+        (document.head || document.documentElement).appendChild(liveStyleNode);
     }
 
-    // If all selected themes were loaded from the instant cache, uncloak immediately!
     if (pendingThemes === 0) uncloakPage();
 }
