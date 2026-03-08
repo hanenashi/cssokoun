@@ -10,7 +10,7 @@ window.cssokoun.log = function(level, moduleName, ...args) {
 };
 const coreLog = (level, ...args) => window.cssokoun.log(level, 'core', ...args);
 
-coreLog('INFO', 'Core initialized. Smart Caching active.');
+coreLog('INFO', 'Core initialized. Smart Caching & Anti-FOUC active.');
 
 (function injectRoutingClasses() {
     const path = window.location.pathname.split('/').filter(Boolean);
@@ -22,73 +22,79 @@ coreLog('INFO', 'Core initialized. Smart Caching active.');
     }
 })();
 
-// Fetch Manifest (Always fresh to ensure we know what modules to load)
 const MANIFEST_URL = REPO + 'modules.json?v=' + Date.now();
-coreLog('SNIFF', `Fetching manifest from: ${MANIFEST_URL}`);
 
 GM.fetch({
     method: "GET",
     url: MANIFEST_URL,
     onload: function(res) {
-        if (res.status !== 200) return coreLog('ERROR', 'Manifest fetch failed.', res.status);
-        try {
-            const manifest = JSON.parse(res.responseText);
-            window.cssokoun.manifest = manifest;
-            coreLog('INFO', 'Manifest parsed successfully.');
-            loadModules(manifest);
-        } catch (e) {
-            coreLog('ERROR', 'Manifest is invalid JSON.', e);
+        if (res.status === 200) {
+            try {
+                const manifest = JSON.parse(res.responseText);
+                window.cssokoun.manifest = manifest;
+                loadModules(manifest);
+            } catch (e) { coreLog('ERROR', 'Manifest is invalid JSON.', e); }
         }
     }
 });
 
 function loadModules(manifest) {
     const cacheBuster = `?v=${Date.now()}`;
+    let pendingThemes = 0;
+
+    function uncloakPage() {
+        setTimeout(() => {
+            const cloak = document.getElementById('cssokoun-cloak');
+            if (cloak) {
+                cloak.textContent += `\nbody { opacity: 1 !important; filter: blur(0) !important; pointer-events: auto !important; }`;
+                coreLog('INFO', 'Theme applied. Uncloaking page smoothly.');
+                setTimeout(() => cloak.remove(), 300);
+            }
+        }, 30);
+    }
 
     const injectCSS = (url, id) => {
         const cacheKey = `cso_cache_${id}`;
         const cachedCSS = GM.get(cacheKey, null);
-        
         window.cssokoun.activeThemeCache = window.cssokoun.activeThemeCache || {};
 
-        // 1. INSTANT INJECTION: If we have it in storage, inject it immediately!
         if (cachedCSS) {
             coreLog('INFO', `Injected CSS from local cache instantly: ${id}`);
             GM.addStyle(cachedCSS);
             window.cssokoun.activeThemeCache[id] = cachedCSS;
+        } else {
+            pendingThemes++; // Tell the uncloaker to wait for the network fetch
         }
 
-        // 2. BACKGROUND FETCH: Check GitHub silently to update the cache for next time
-        coreLog('SNIFF', `Verifying CSS with GitHub: ${id}`);
         GM.fetch({
             method: "GET",
             url: REPO + url + cacheBuster,
             onload: (res) => {
                 if (res.status === 200) {
                     const freshCSS = res.responseText;
-                    
-                    // If the cache was empty, we need to inject it now
                     if (!cachedCSS) {
                         coreLog('INFO', `Injected fresh CSS from network: ${id}`);
                         GM.addStyle(freshCSS);
                         window.cssokoun.activeThemeCache[id] = freshCSS;
+                        pendingThemes--;
+                        if (pendingThemes === 0) uncloakPage();
                     }
-                    
-                    // Save the fresh CSS to storage if it changed
                     if (freshCSS !== cachedCSS) {
                         GM.set(cacheKey, freshCSS);
                         coreLog('INFO', `Updated local cache for: ${id}`);
-                        // Update live editor memory bank if it's open
                         window.cssokoun.activeThemeCache[id] = freshCSS;
                     }
+                } else {
+                    if (!cachedCSS) { pendingThemes--; if (pendingThemes === 0) uncloakPage(); }
                 }
+            },
+            onerror: () => {
+                if (!cachedCSS) { pendingThemes--; if (pendingThemes === 0) uncloakPage(); }
             }
         });
     };
 
     const injectJS = (url, id) => {
-        // JS is trickier to cache due to execution context, so we still fetch it fresh for safety
-        coreLog('SNIFF', `Fetching JS: ${id}`);
         GM.fetch({
             method: "GET",
             url: REPO + url + cacheBuster,
@@ -97,25 +103,16 @@ function loadModules(manifest) {
                     try {
                         const modWrapper = new Function('GM', 'cssokoun', 'REPO', res.responseText);
                         modWrapper(GM, window.cssokoun, REPO);
-                    } catch (e) {
-                        coreLog('ERROR', `Execution failed in: ${id}`, e);
-                    }
+                    } catch (e) { coreLog('ERROR', `Execution failed in: ${id}`, e); }
                 }
             }
         });
     };
 
-    // Load System and Tweaks
-    manifest.system.forEach(mod => {
-        if (mod.required || window.cssokoun.state.modules[mod.id]) injectJS(mod.file, mod.id);
-    });
-
+    manifest.system.forEach(mod => { if (mod.required || window.cssokoun.state.modules[mod.id]) injectJS(mod.file, mod.id); });
     if (manifest.tweaks) manifest.tweaks.forEach(mod => { if (window.cssokoun.state.modules[mod.id]) injectJS(mod.file, mod.id); });
-
-    // Load Themes (Using our new Instant Cache logic)
     if (manifest.themes) manifest.themes.forEach(mod => { if (window.cssokoun.state.modules[mod.id]) injectCSS(mod.file, mod.id); });
 
-    // Load Custom Overrides last
     const customCSS = GM.get('cssokoun_custom_css', '');
     if (customCSS.trim().length > 0) {
         let liveStyleNode = document.createElement('style');
@@ -123,4 +120,7 @@ function loadModules(manifest) {
         liveStyleNode.textContent = customCSS;
         document.head.appendChild(liveStyleNode);
     }
+
+    // If all selected themes were loaded from the instant cache, uncloak immediately!
+    if (pendingThemes === 0) uncloakPage();
 }
