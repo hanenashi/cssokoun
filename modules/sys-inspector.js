@@ -5,20 +5,31 @@ window.cssokoun.inspectorWindow = null;
 let inspectorActive = false;
 let currentTarget = null;
 let tweakHistory = [];
+let liveStyleNode = null;
+let highlightBox = null;
 
 const initialCSS = GM.get('cssokoun_custom_css', '');
 if (initialCSS.trim() !== '') tweakHistory.push(initialCSS);
 
-let liveStyleNode = document.getElementById('cssokoun-live-styles');
-if (!liveStyleNode) {
-    liveStyleNode = document.createElement('style');
-    liveStyleNode.id = 'cssokoun-live-styles';
-    document.head.appendChild(liveStyleNode);
+// --- SAFELY INJECT DOM ELEMENTS ONLY AFTER HTML IS READY ---
+function initInspectorDOM() {
+    liveStyleNode = document.getElementById('cssokoun-live-styles');
+    if (!liveStyleNode) {
+        liveStyleNode = document.createElement('style');
+        liveStyleNode.id = 'cssokoun-live-styles';
+        (document.head || document.documentElement).appendChild(liveStyleNode);
+    }
+
+    highlightBox = document.createElement('div');
+    highlightBox.style.cssText = 'position: fixed; pointer-events: none; border: 2px dashed #007acc; background: rgba(0, 122, 204, 0.15); z-index: 999998; display: none; transition: top 0.05s, left 0.05s, width 0.05s, height 0.05s;';
+    document.body.appendChild(highlightBox);
 }
 
-const highlightBox = document.createElement('div');
-highlightBox.style.cssText = 'position: fixed; pointer-events: none; border: 2px dashed #007acc; background: rgba(0, 122, 204, 0.15); z-index: 999998; display: none; transition: top 0.05s, left 0.05s, width 0.05s, height 0.05s;';
-document.body.appendChild(highlightBox);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInspectorDOM);
+} else {
+    initInspectorDOM();
+}
 
 function getCSSSelector(el) {
     if (el.id) return `#${el.id}`;
@@ -37,7 +48,7 @@ function getCSSSelector(el) {
 }
 
 document.addEventListener('mousemove', (e) => {
-    if (!inspectorActive) return;
+    if (!inspectorActive || !highlightBox) return;
     const rect = e.target.getBoundingClientRect();
     highlightBox.style.display = 'block';
     highlightBox.style.top = rect.top + 'px';
@@ -68,7 +79,7 @@ window.addEventListener('message', async (e) => {
     
     if (e.data.action === 'TOGGLE_MODE') {
         inspectorActive = e.data.active;
-        if (!inspectorActive) highlightBox.style.display = 'none';
+        if (!inspectorActive && highlightBox) highlightBox.style.display = 'none';
     } 
     else if (e.data.action === 'APPLY_TWEAK') {
         const block = `\n/* Tweak: ${e.data.selector} */\n${e.data.selector} { ${e.data.cssRules} }\n`;
@@ -77,7 +88,7 @@ window.addEventListener('message', async (e) => {
         
         tweakHistory.push(newCSS); 
         await Promise.resolve(GM.set('cssokoun_custom_css', newCSS));
-        liveStyleNode.textContent = newCSS; 
+        if (liveStyleNode) liveStyleNode.textContent = newCSS; 
         
         if (window.cssokoun.editorWindow && !window.cssokoun.editorWindow.closed) {
             window.cssokoun.editorWindow.postMessage({ app: 'cssokoun_popup', action: 'SYNC_CSS', css: newCSS }, '*');
@@ -88,7 +99,7 @@ window.addEventListener('message', async (e) => {
         tweakHistory.pop(); 
         const previousCSS = tweakHistory[tweakHistory.length - 1] || '';
         await Promise.resolve(GM.set('cssokoun_custom_css', previousCSS)); 
-        liveStyleNode.textContent = previousCSS;
+        if (liveStyleNode) liveStyleNode.textContent = previousCSS;
         
         if (window.cssokoun.editorWindow && !window.cssokoun.editorWindow.closed) {
             window.cssokoun.editorWindow.postMessage({ app: 'cssokoun_popup', action: 'SYNC_CSS', css: previousCSS }, '*');
@@ -110,7 +121,7 @@ window.cssokoun.launchInspector = function() {
     if (window.cssokoun.inspectorWindow && !window.cssokoun.inspectorWindow.closed) return window.cssokoun.inspectorWindow.focus();
 
     inspectorActive = false;
-    highlightBox.style.display = 'none';
+    if (highlightBox) highlightBox.style.display = 'none';
 
     const html = `
         <!DOCTYPE html>
@@ -215,8 +226,9 @@ window.cssokoun.launchInspector = function() {
         </body>
         </html>
     `;
-
-    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    
+    // Force UTF-8 BOM to prevent garbled text in Firefox
+    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), html], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     window.cssokoun.inspectorWindow = window.open(url, 'cssokounInspector', 'width=380,height=550,menubar=no,toolbar=no,location=no,status=no');
 };
