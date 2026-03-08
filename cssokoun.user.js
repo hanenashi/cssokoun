@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         cssokoun Seed
 // @namespace    https://github.com/hanenashi/cssokoun
-// @version      0.5
+// @version      0.6
 // @description  Modular CSS/JS loader for okoun.cz
 // @author       kokochan / hanenashi
 // @match        *://www.okoun.cz/*
+// @run-at       document-start
 // @grant        GM_xmlhttpRequest
 // @grant        GM.xmlHttpRequest
 // @grant        GM_getValue
@@ -21,7 +22,27 @@
 
 (async function() {
     'use strict';
-    
+
+    // --- 1. THE ANTI-FOUC CLOAK ---
+    // Inject a heavy blur and 0 opacity instantly before the page paints.
+    const cloak = document.createElement('style');
+    cloak.id = 'cssokoun-cloak';
+    cloak.textContent = `
+        html { background: #1e1e1e !important; }
+        body { opacity: 0 !important; filter: blur(10px) !important; transition: opacity 0.25s ease-out, filter 0.25s ease-out !important; pointer-events: none !important; }
+    `;
+    document.documentElement.appendChild(cloak);
+
+    // Fail-safe: If the network hangs, uncloak after 1.5 seconds anyway
+    setTimeout(() => {
+        const c = document.getElementById('cssokoun-cloak');
+        if (c) {
+            c.textContent += `\nbody { opacity: 1 !important; filter: blur(0) !important; pointer-events: auto !important; }`;
+            setTimeout(() => c.remove(), 300);
+        }
+    }, 1500);
+
+    // --- 2. THE PIPELINE ---
     const REPO_URL = 'https://raw.githubusercontent.com/hanenashi/cssokoun/main/';
     const CORE_URL = REPO_URL + 'modules/core.js?v=' + Date.now();
 
@@ -33,7 +54,6 @@
 
     if (!fetcher) return console.error("[cssokoun::seed] FATAL: Cross-origin not supported.");
 
-    // Pre-fetch async storage values
     let memCache = {};
     if (getter) {
         try {
@@ -42,7 +62,6 @@
             memCache['cssokoun_custom_css'] = await Promise.resolve(getter('cssokoun_custom_css', ''));
             memCache['cssokoun_custom_js'] = await Promise.resolve(getter('cssokoun_custom_js', ''));
             
-            // NEW: Pre-fetch all cached CSS themes
             if (lister) {
                 const keys = await Promise.resolve(lister());
                 for (const key of keys) {
@@ -51,9 +70,7 @@
                     }
                 }
             }
-        } catch(e) {
-            console.error("[cssokoun::seed] Failed to read storage:", e);
-        }
+        } catch(e) { console.error("[cssokoun::seed] Failed to read storage:", e); }
     }
 
     const GM_API = {
