@@ -45,6 +45,7 @@ div.content { font-size: 25pt; }
     word-break: normal !important; 
     
     /* Give the text breathing room on the right edge */
+    padding-left: 10px !important; 
     padding-right: 15px !important; 
     box-sizing: border-box !important; 
 }
