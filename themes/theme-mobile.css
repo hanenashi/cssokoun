@@ -38,21 +38,20 @@ div.content { font-size: 25pt; }
 /* --- TABLE BLOWOUT FIX FOR LONG URLS --- */
 .content, .item .meta, body.userlist .main .main, body.boardlist .main .main {
     font-size: 25pt; 
-    /* Legacy fallback */
-    word-wrap: break-word; 
-    word-break: break-word !important;
-    /* Modern table-breaker */
+    /* Tell the browser to ONLY break words that are too long to fit */
     overflow-wrap: anywhere !important; 
-    line-break: anywhere !important;
+    word-wrap: break-word !important;
+    /* Explicitly protect normal words from being chopped in half */
+    word-break: normal !important; 
 }
 
 .head .menu, .board .main .settings { font-size: 25pt; }
 .head .menu { margin-left: 0em; }
 
-/* Force raw links to also wrap anywhere */
+/* Apply the exact same smart-wrapping to links */
 a { 
-    word-wrap: break-word; 
-    word-break: break-word !important;
     overflow-wrap: anywhere !important; 
-    line-break: anywhere !important; 
+    word-wrap: break-word !important;
+    word-break: normal !important; 
 }
+
