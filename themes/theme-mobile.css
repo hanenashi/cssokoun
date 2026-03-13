@@ -35,14 +35,18 @@ div.content { font-size: 25pt; }
 .descr { position: absolute; right: 3%; display: none; visibility: hidden; }
 .yui-button.top { float: inherit; margin-bottom: 0.5em; }
 
-/* --- TABLE BLOWOUT FIX FOR LONG URLS --- */
+/* --- TABLE BLOWOUT FIX FOR LONG URLS & PADDING --- */
 .content, .item .meta, body.userlist .main .main, body.boardlist .main .main {
     font-size: 25pt; 
+    
     /* Tell the browser to ONLY break words that are too long to fit */
     overflow-wrap: anywhere !important; 
     word-wrap: break-word !important;
-    /* Explicitly protect normal words from being chopped in half */
     word-break: normal !important; 
+    
+    /* Give the text breathing room on the right edge */
+    padding-right: 15px !important; 
+    box-sizing: border-box !important; 
 }
 
 .head .menu, .board .main .settings { font-size: 25pt; }
@@ -54,4 +58,3 @@ a {
     word-wrap: break-word !important;
     word-break: normal !important; 
 }
-
