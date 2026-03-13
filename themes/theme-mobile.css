@@ -34,9 +34,25 @@ h2 { font-family: sans-serif; font-size: 2.5em; }
 div.content { font-size: 25pt; }
 .descr { position: absolute; right: 3%; display: none; visibility: hidden; }
 .yui-button.top { float: inherit; margin-bottom: 0.5em; }
+
+/* --- TABLE BLOWOUT FIX FOR LONG URLS --- */
 .content, .item .meta, body.userlist .main .main, body.boardlist .main .main {
-    font-size: 25pt; overflow-wrap: break-word; word-wrap: break-word;
+    font-size: 25pt; 
+    /* Legacy fallback */
+    word-wrap: break-word; 
+    word-break: break-word !important;
+    /* Modern table-breaker */
+    overflow-wrap: anywhere !important; 
+    line-break: anywhere !important;
 }
+
 .head .menu, .board .main .settings { font-size: 25pt; }
 .head .menu { margin-left: 0em; }
-a { overflow-wrap: break-word; word-wrap: break-word; }
+
+/* Force raw links to also wrap anywhere */
+a { 
+    word-wrap: break-word; 
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important; 
+    line-break: anywhere !important; 
+}
