@@ -1,9 +1,6 @@
 {
   "system": [
-    { "id": "sys-logger", "file": "modules/sys-logger.js", "required": true },
-    { "id": "sys-ui", "file": "modules/sys-ui.js", "required": true },
-    { "id": "sys-editor", "file": "modules/sys-editor.js", "required": true },
-    { "id": "sys-inspector", "file": "modules/sys-inspector.js", "required": true }
+    { "id": "sys-ui", "file": "modules/sys-ui.js", "required": true }
   ],
   "themes": [
     { "id": "theme-mobile", "name": "Mobile Theme (CSS)", "file": "themes/theme-mobile.css" },
@@ -11,8 +8,5 @@
     { "id": "theme-kostej3", "name": "Kostej3 Antiquewhite (CSS)", "file": "themes/theme-kostej3.css" },
     { "id": "theme-darksilver", "name": "Darksilver 2.0 Lucifer (CSS)", "file": "themes/theme-darksilver.css" },
     { "id": "theme-silverlight", "name": "Silverlight (Darksilver Layout/Vanilla Colors)", "file": "themes/theme-silverlight.css" }
-  ],
-  "tweaks": [
-    { "id": "mobile-viewport", "name": "📱 Force Mobile Viewport (JS)", "file": "modules/theme-mobile.js" }
   ]
 }

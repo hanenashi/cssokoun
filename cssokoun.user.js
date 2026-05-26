@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         cssokoun Seed
 // @namespace    https://github.com/hanenashi/cssokoun
-// @version      0.6
-// @description  Modular CSS/JS loader for okoun.cz
+// @version      0.7
+// @description  CSS style switcher for okoun.cz
 // @author       kokochan / hanenashi
 // @match        *://www.okoun.cz/*
 // @run-at       document-start
@@ -58,10 +58,7 @@
     if (getter) {
         try {
             memCache['cssokoun_modules'] = await Promise.resolve(getter('cssokoun_modules', {}));
-            memCache['cssokoun_debug'] = await Promise.resolve(getter('cssokoun_debug', true));
-            memCache['cssokoun_custom_css'] = await Promise.resolve(getter('cssokoun_custom_css', ''));
-            memCache['cssokoun_custom_js'] = await Promise.resolve(getter('cssokoun_custom_js', ''));
-            
+
             if (lister) {
                 const keys = await Promise.resolve(lister());
                 for (const key of keys) {
