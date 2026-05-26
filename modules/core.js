@@ -26,6 +26,18 @@ function addThemeStyle(css, id) {
     return styleNode;
 }
 
+function applyThemeSideEffects(id) {
+    if (id !== 'theme-mobile') return;
+
+    let viewport = document.querySelector('meta[name="viewport"]');
+    if (!viewport) {
+        viewport = document.createElement('meta');
+        viewport.name = 'viewport';
+        document.head.appendChild(viewport);
+    }
+    viewport.content = 'width=device-width, initial-scale=1.0';
+}
+
 (function injectRoutingClasses() {
     const root = document.documentElement;
     const path = window.location.pathname.split('/').filter(Boolean);
@@ -78,6 +90,7 @@ function loadModules(manifest) {
     const injectCSS = (url, id) => {
         const cacheKey = `cso_cache_${id}`;
         const cachedCSS = GM.get(cacheKey, null);
+        applyThemeSideEffects(id);
 
         if (cachedCSS) {
             coreLog('INFO', `Injected CSS from local cache: ${id}`);

@@ -115,6 +115,55 @@ function injectUI() {
         #cssokoun-apply:hover {
             background: #0069ad;
         }
+        @media (max-width: 700px), (pointer: coarse) {
+            #cssokoun-switcher {
+                position: static;
+                margin-left: 0;
+                font-size: 16px;
+                line-height: 1.2;
+            }
+            #cssokoun-toggle {
+                display: inline-block;
+                min-height: 32px;
+                padding: 5px 8px;
+                font-size: 16px;
+                line-height: 20px;
+            }
+            #cssokoun-panel {
+                position: fixed;
+                top: auto;
+                left: 10px;
+                right: 10px;
+                bottom: 12px;
+                width: auto;
+                max-height: min(78vh, 520px);
+                overflow-y: auto;
+                padding: 14px;
+                border-radius: 8px;
+                font-size: 16px;
+                z-index: 2147483647;
+            }
+            #cssokoun-panel h4 {
+                font-size: 17px;
+                margin-bottom: 10px;
+            }
+            .cssokoun-theme-option {
+                min-height: 36px;
+                padding: 8px 0;
+                font-size: 16px;
+                line-height: 1.25;
+            }
+            .cssokoun-theme-option input {
+                width: 20px;
+                height: 20px;
+                margin-top: 0;
+                flex: 0 0 auto;
+            }
+            #cssokoun-apply {
+                min-height: 42px;
+                font-size: 16px;
+            }
+        }
     `);
 
     const switcher = document.createElement('span');

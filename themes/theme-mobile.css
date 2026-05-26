@@ -59,3 +59,181 @@ a {
     word-wrap: break-word !important;
     word-break: normal !important; 
 }
+
+/* --- MOBILE HEADER REBUILD --- */
+@media (max-width: 700px) {
+    html,
+    body {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    #body {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    .head {
+        display: grid !important;
+        grid-template-columns: minmax(3.3rem, auto) 1fr !important;
+        gap: 0.25rem 0.45rem !important;
+        align-items: start !important;
+        padding: 0.25rem 0.35rem 0.45rem !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.18) !important;
+        box-sizing: border-box !important;
+    }
+
+    .head h1 {
+        grid-column: 1 !important;
+        grid-row: 1 / span 2 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: auto !important;
+        max-width: 3.5rem !important;
+        line-height: 1.05 !important;
+        overflow: hidden !important;
+    }
+
+    .head h1 a {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 0.8rem !important;
+        line-height: 1.05 !important;
+        white-space: normal !important;
+    }
+
+    .head h1 a::after {
+        display: block !important;
+        font-size: 0.78rem !important;
+        line-height: 1 !important;
+    }
+
+    .head .menu {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.35rem 0.65rem !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1rem !important;
+        line-height: 1.2 !important;
+        overflow: visible !important;
+    }
+
+    .head .menu form:not(#cssokoun-panel),
+    .head .menu .search {
+        display: contents !important;
+    }
+
+    .head .menu input.text,
+    .head .user input.text {
+        flex: 1 1 10rem !important;
+        min-width: 0 !important;
+        width: auto !important;
+        max-width: 100% !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+        font-size: 1rem !important;
+        line-height: 1.2 !important;
+        padding: 0.25rem 0.35rem !important;
+    }
+
+    .head .menu button,
+    .head .user button,
+    .head .menu .yui-button button,
+    .head .user .yui-button button {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        height: auto !important;
+        font-size: 1rem !important;
+        line-height: 1.2 !important;
+        padding: 0.28rem 0.5rem !important;
+    }
+
+    .head .menu a {
+        flex: 0 1 auto !important;
+        font-size: 1rem !important;
+        line-height: 1.2 !important;
+        white-space: normal !important;
+    }
+
+    .head .user {
+        grid-column: 1 / -1 !important;
+        grid-row: 2 !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 0.35rem 0.5rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0.25rem 0 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        clear: both !important;
+        float: none !important;
+        text-align: right !important;
+        font-size: 1rem !important;
+        line-height: 1.25 !important;
+    }
+
+    .head .user b {
+        font-size: 1.05rem !important;
+        line-height: 1.15 !important;
+    }
+
+    .head .user form {
+        display: flex !important;
+        flex: 1 1 100% !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 0.35rem !important;
+        max-width: 100% !important;
+    }
+
+    .head .user a {
+        font-size: 1rem !important;
+        line-height: 1.2 !important;
+    }
+
+    .head #cssokoun-switcher {
+        flex: 0 0 auto !important;
+        margin-left: 0 !important;
+        font-size: 1rem !important;
+        line-height: 1.2 !important;
+    }
+
+    .head #cssokoun-toggle {
+        display: inline-block !important;
+        min-height: 1.8rem !important;
+        padding: 0.25rem 0.4rem !important;
+        font-size: 1rem !important;
+        line-height: 1.2 !important;
+    }
+
+    h2 {
+        margin: 0.7rem 0.45rem 0.45rem !important;
+        font-size: 1.65rem !important;
+        line-height: 1.15 !important;
+    }
+
+    .pager,
+    .pager ul {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+    }
+
+    .pager ul li {
+        font-size: 1rem !important;
+    }
+}
