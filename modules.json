@@ -3,6 +3,7 @@
     { "id": "sys-ui", "file": "modules/sys-ui.js", "required": true }
   ],
   "themes": [
+    { "id": "theme-vanilla-dark", "name": "Vanilla Dark (CSS)", "file": "themes/theme-vanilla-dark.css" },
     { "id": "theme-mobile", "name": "Mobile Theme (CSS)", "file": "themes/theme-mobile.css" },
     { "id": "theme-mageo", "name": "MAGEO originál (CSS)", "file": "themes/theme-mageo.css" },
     { "id": "theme-kostej3", "name": "Kostej3 Antiquewhite (CSS)", "file": "themes/theme-kostej3.css" },

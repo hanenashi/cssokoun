@@ -1,0 +1,231 @@
+/*
+ * cssokoun Vanilla Dark
+ * Keeps Okoun's default layout and spacing, changes only the color surface.
+ */
+
+:root {
+    color-scheme: dark;
+}
+
+html {
+    background: #080c12 !important;
+}
+
+body {
+    background: #172235 !important;
+    color: #d9e3f0 !important;
+}
+
+#body {
+    background: #101824 !important;
+    color: #d9e3f0 !important;
+}
+
+.head {
+    border-bottom-color: #334156 !important;
+}
+
+.footer {
+    border-top-color: #334156 !important;
+}
+
+.head h1 a,
+h1,
+h2,
+h3,
+h4,
+.head .user,
+.head .user b,
+.main,
+.main .main,
+.main .ctx,
+.settings,
+.descr,
+.hpdescr,
+.footer {
+    color: #d9e3f0 !important;
+}
+
+a,
+a:visited {
+    color: #8fb8ff !important;
+}
+
+a:hover,
+.head .menu a:hover,
+.head .user a:hover,
+.footer a:hover {
+    color: #f4c977 !important;
+    background: #26364d !important;
+}
+
+.head .menu a,
+.head .menu a:visited,
+.head .user a,
+.head .user a:visited,
+.footer a,
+.footer a:visited,
+.settings a,
+.settings a:visited {
+    color: #f0a84d !important;
+}
+
+.head .menu .new a,
+.head .menu .new a:visited {
+    color: #fff3d6 !important;
+    background: #8a3d2d !important;
+}
+
+.welcome,
+.col,
+.index .main .yui-u,
+.index .main .yui-u.first,
+.index .news,
+.index .topics,
+.index .newBoards,
+.index .current,
+.listing .item,
+.room .item,
+.preview .item,
+.messages,
+#sysmsgBox.messages,
+.sysmsgBox.messages {
+    background: #161f2d !important;
+    color: #d9e3f0 !important;
+    border-color: #2f4058 !important;
+}
+
+.room .item.new,
+.room .item.new.o-first {
+    background: #1c2a3d !important;
+    border-color: #4a6590 !important;
+}
+
+.room .item.hilited,
+.room .item.hilited.new {
+    background: #26364d !important;
+    border-color: #f0a84d !important;
+}
+
+.item .meta,
+.item .meta a,
+.item .meta a:visited,
+.item .actions,
+.actions .prev,
+.actions .reply,
+.actions a,
+.actions a:visited {
+    color: #9fb0c6 !important;
+}
+
+.item .actions {
+    border-top-color: #2f4058 !important;
+}
+
+.item .content,
+.item .content *,
+.welcome .content,
+.yui-base {
+    color: #d9e3f0 !important;
+}
+
+.item .content blockquote,
+blockquote {
+    background: #101824 !important;
+    border-color: #334156 !important;
+    color: #c6d2e1 !important;
+}
+
+.item .content pre,
+.item .content code,
+pre,
+code {
+    background: #0b111a !important;
+    color: #d6e2f2 !important;
+    border-color: #334156 !important;
+}
+
+.user.ico,
+.user .ico,
+.item .ico {
+    background: #0e1621 !important;
+    border-color: #334156 !important;
+}
+
+.expbutton .hd {
+    background: #9d5b22 !important;
+    border-color: #c9782c !important;
+}
+
+.expbutton .hd a,
+.expbutton .hd a:visited {
+    color: #fff3d6 !important;
+}
+
+.item .actions.replyForm a.reply,
+.expbutton .post.content,
+.actions.replyForm .post.content,
+.post.content {
+    background: #241b14 !important;
+    border-color: #9d5b22 !important;
+    color: #f0e2ce !important;
+}
+
+input,
+input.text,
+textarea,
+select {
+    background: #0d1420 !important;
+    color: #e6edf7 !important;
+    border-color: #4a5c75 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #8fb8ff !important;
+    outline-color: #8fb8ff !important;
+}
+
+button,
+.yui-button button,
+input[type="submit"] {
+    background: #24364e !important;
+    color: #e6edf7 !important;
+    border-color: #536982 !important;
+}
+
+button:hover,
+.yui-button button:hover,
+input[type="submit"]:hover {
+    background: #304968 !important;
+    color: #ffffff !important;
+}
+
+.pager ul li,
+.pager ul li a,
+.pager ul li a:visited {
+    background-color: #162337 !important;
+    background-image: none !important;
+    color: #8fb8ff !important;
+    border-color: #334156 !important;
+}
+
+hr {
+    border-color: #334156 !important;
+}
+
+table,
+td,
+th {
+    border-color: #334156 !important;
+}
+
+img {
+    opacity: 0.96;
+}
+
+#adwrapper-lb,
+#adwrapper-bs {
+    background: #101824 !important;
+}
