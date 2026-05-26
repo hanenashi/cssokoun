@@ -11,6 +11,21 @@ const coreLog = (level, ...args) => window.cssokoun.log(level, 'core', ...args);
 
 coreLog('INFO', 'Core initialized.');
 
+window.cssokoun.themeStyleNodes = [];
+
+function addThemeStyle(css, id) {
+    const oldNode = document.getElementById(`cssokoun-theme-${id}`);
+    if (oldNode) oldNode.remove();
+
+    const styleNode = document.createElement('style');
+    styleNode.id = `cssokoun-theme-${id}`;
+    styleNode.dataset.cssokounTheme = id;
+    styleNode.textContent = css;
+    (document.head || document.documentElement).appendChild(styleNode);
+    window.cssokoun.themeStyleNodes = [styleNode];
+    return styleNode;
+}
+
 (function injectRoutingClasses() {
     const root = document.documentElement;
     const path = window.location.pathname.split('/').filter(Boolean);
@@ -66,7 +81,7 @@ function loadModules(manifest) {
 
         if (cachedCSS) {
             coreLog('INFO', `Injected CSS from local cache: ${id}`);
-            GM.addStyle(cachedCSS);
+            addThemeStyle(cachedCSS, id);
         } else {
             pendingThemes++;
         }
@@ -78,7 +93,7 @@ function loadModules(manifest) {
                 if (res.status === 200) {
                     const freshCSS = res.responseText;
                     if (!cachedCSS) {
-                        GM.addStyle(freshCSS);
+                        addThemeStyle(freshCSS, id);
                         pendingThemes--;
                         if (pendingThemes === 0) uncloakPage();
                     }

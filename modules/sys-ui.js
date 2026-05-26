@@ -15,6 +15,21 @@ function reloadHostPage() {
     window.location.href = window.location.pathname + window.location.search;
 }
 
+function setVanillaPreview(active, toggle) {
+    const knownNodes = window.cssokoun.themeStyleNodes || [];
+    const discoveredNodes = Array.from(document.querySelectorAll('style[data-cssokoun-theme], #cssokoun-live-styles'));
+    const nodes = Array.from(new Set([...knownNodes, ...discoveredNodes]));
+    nodes.forEach(node => {
+        node.disabled = active;
+    });
+
+    window.cssokoun.vanillaPreviewActive = active;
+    toggle.dataset.vanillaPreview = active ? 'true' : 'false';
+    toggle.textContent = active ? 'cssokoun: vanilla' : 'cssokoun';
+    toggle.title = active ? 'Right-click or long-press to restore selected CSS style' : 'Right-click or long-press to preview vanilla Okoun';
+    log('INFO', active ? 'Vanilla preview enabled.' : 'Selected theme restored.');
+}
+
 function injectUI() {
     const menu = document.querySelector('.head .menu');
     if (!menu) return log('ERROR', 'Could not find .head .menu');
@@ -45,6 +60,9 @@ function injectUI() {
             cursor: pointer;
             font-weight: bold;
             text-decoration: none;
+        }
+        #cssokoun-toggle[data-vanilla-preview="true"] {
+            color: #b85f00;
         }
         #cssokoun-toggle:hover {
             text-decoration: underline;
@@ -106,6 +124,8 @@ function injectUI() {
     toggle.id = 'cssokoun-toggle';
     toggle.href = '#';
     toggle.textContent = 'cssokoun';
+    toggle.title = 'Right-click or long-press to preview vanilla Okoun';
+    toggle.dataset.vanillaPreview = 'false';
 
     const panel = document.createElement('form');
     panel.id = 'cssokoun-panel';
@@ -133,8 +153,43 @@ function injectUI() {
 
     toggle.addEventListener('click', event => {
         event.preventDefault();
+        if (longPressTriggered) {
+            longPressTriggered = false;
+            return;
+        }
         panel.hidden = !panel.hidden;
     });
+
+    toggle.addEventListener('contextmenu', event => {
+        event.preventDefault();
+        panel.hidden = true;
+        setVanillaPreview(!window.cssokoun.vanillaPreviewActive, toggle);
+    });
+
+    let longPressTimer = null;
+    let longPressTriggered = false;
+
+    toggle.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'mouse') return;
+        longPressTriggered = false;
+        longPressTimer = window.setTimeout(() => {
+            longPressTriggered = true;
+            panel.hidden = true;
+            setVanillaPreview(!window.cssokoun.vanillaPreviewActive, toggle);
+        }, 550);
+    });
+
+    const clearLongPress = () => {
+        if (longPressTimer) window.clearTimeout(longPressTimer);
+        longPressTimer = null;
+    };
+
+    toggle.addEventListener('pointerup', event => {
+        clearLongPress();
+        if (longPressTriggered) event.preventDefault();
+    });
+    toggle.addEventListener('pointerleave', clearLongPress);
+    toggle.addEventListener('pointercancel', clearLongPress);
 
     panel.addEventListener('submit', async event => {
         event.preventDefault();
