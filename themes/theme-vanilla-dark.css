@@ -5,28 +5,42 @@
 
 :root {
     color-scheme: dark;
+    --cso-vd-page: #0b0a09;
+    --cso-vd-body: #151310;
+    --cso-vd-panel: #1d1a16;
+    --cso-vd-panel-soft: #242018;
+    --cso-vd-panel-deep: #11100e;
+    --cso-vd-border: #4a4034;
+    --cso-vd-border-soft: #352f28;
+    --cso-vd-text: #ddd4c7;
+    --cso-vd-muted: #a89b8d;
+    --cso-vd-link: #b9a77f;
+    --cso-vd-link-hot: #d3c29e;
+    --cso-vd-accent: #74624c;
+    --cso-vd-accent-dark: #4f3f30;
+    --cso-vd-form: #14120f;
 }
 
 html {
-    background: #080c12 !important;
+    background: var(--cso-vd-page) !important;
 }
 
 body {
-    background: #172235 !important;
-    color: #d9e3f0 !important;
+    background: var(--cso-vd-body) !important;
+    color: var(--cso-vd-text) !important;
 }
 
 #body {
-    background: #101824 !important;
-    color: #d9e3f0 !important;
+    background: var(--cso-vd-panel-deep) !important;
+    color: var(--cso-vd-text) !important;
 }
 
 .head {
-    border-bottom-color: #334156 !important;
+    border-bottom-color: var(--cso-vd-border-soft) !important;
 }
 
 .footer {
-    border-top-color: #334156 !important;
+    border-top-color: var(--cso-vd-border-soft) !important;
 }
 
 .head h1 a,
@@ -43,20 +57,20 @@ h4,
 .descr,
 .hpdescr,
 .footer {
-    color: #d9e3f0 !important;
+    color: var(--cso-vd-text) !important;
 }
 
 a,
 a:visited {
-    color: #8fb8ff !important;
+    color: var(--cso-vd-link) !important;
 }
 
 a:hover,
 .head .menu a:hover,
 .head .user a:hover,
 .footer a:hover {
-    color: #f4c977 !important;
-    background: #26364d !important;
+    color: var(--cso-vd-link-hot) !important;
+    background: #2f281f !important;
 }
 
 .head .menu a,
@@ -67,13 +81,13 @@ a:hover,
 .footer a:visited,
 .settings a,
 .settings a:visited {
-    color: #f0a84d !important;
+    color: var(--cso-vd-link-hot) !important;
 }
 
 .head .menu .new a,
 .head .menu .new a:visited {
-    color: #fff3d6 !important;
-    background: #8a3d2d !important;
+    color: #f3e3c6 !important;
+    background: #49362b !important;
 }
 
 .welcome,
@@ -90,21 +104,21 @@ a:hover,
 .messages,
 #sysmsgBox.messages,
 .sysmsgBox.messages {
-    background: #161f2d !important;
-    color: #d9e3f0 !important;
-    border-color: #2f4058 !important;
+    background: var(--cso-vd-panel) !important;
+    color: var(--cso-vd-text) !important;
+    border-color: var(--cso-vd-border-soft) !important;
 }
 
 .room .item.new,
 .room .item.new.o-first {
-    background: #1c2a3d !important;
-    border-color: #4a6590 !important;
+    background: var(--cso-vd-panel-soft) !important;
+    border-color: var(--cso-vd-border) !important;
 }
 
 .room .item.hilited,
 .room .item.hilited.new {
-    background: #26364d !important;
-    border-color: #f0a84d !important;
+    background: #2b261f !important;
+    border-color: var(--cso-vd-link-hot) !important;
 }
 
 .item .meta,
@@ -115,110 +129,110 @@ a:hover,
 .actions .reply,
 .actions a,
 .actions a:visited {
-    color: #9fb0c6 !important;
+    color: var(--cso-vd-muted) !important;
 }
 
 .item .actions {
-    border-top-color: #2f4058 !important;
+    border-top-color: var(--cso-vd-border-soft) !important;
 }
 
 .item .content,
 .item .content *,
 .welcome .content,
 .yui-base {
-    color: #d9e3f0 !important;
+    color: var(--cso-vd-text) !important;
 }
 
 .item .content blockquote,
 blockquote {
-    background: #101824 !important;
-    border-color: #334156 !important;
-    color: #c6d2e1 !important;
+    background: var(--cso-vd-panel-deep) !important;
+    border-color: var(--cso-vd-border-soft) !important;
+    color: #d0c5b8 !important;
 }
 
 .item .content pre,
 .item .content code,
 pre,
 code {
-    background: #0b111a !important;
-    color: #d6e2f2 !important;
-    border-color: #334156 !important;
+    background: #0d0c0a !important;
+    color: #e0d6c9 !important;
+    border-color: var(--cso-vd-border-soft) !important;
 }
 
 .user.ico,
 .user .ico,
 .item .ico {
-    background: #0e1621 !important;
-    border-color: #334156 !important;
+    background: var(--cso-vd-panel-deep) !important;
+    border-color: var(--cso-vd-border-soft) !important;
 }
 
 .expbutton .hd {
-    background: #9d5b22 !important;
-    border-color: #c9782c !important;
+    background: var(--cso-vd-accent-dark) !important;
+    border-color: var(--cso-vd-accent) !important;
 }
 
 .expbutton .hd a,
 .expbutton .hd a:visited {
-    color: #fff3d6 !important;
+    color: #f3e3c6 !important;
 }
 
 .item .actions.replyForm a.reply,
 .expbutton .post.content,
 .actions.replyForm .post.content,
 .post.content {
-    background: #241b14 !important;
-    border-color: #9d5b22 !important;
-    color: #f0e2ce !important;
+    background: #211b15 !important;
+    border-color: var(--cso-vd-accent) !important;
+    color: #e9d9c5 !important;
 }
 
 input,
 input.text,
 textarea,
 select {
-    background: #0d1420 !important;
-    color: #e6edf7 !important;
-    border-color: #4a5c75 !important;
+    background: var(--cso-vd-form) !important;
+    color: #e8ded1 !important;
+    border-color: var(--cso-vd-border) !important;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-    border-color: #8fb8ff !important;
-    outline-color: #8fb8ff !important;
+    border-color: var(--cso-vd-link-hot) !important;
+    outline-color: var(--cso-vd-link-hot) !important;
 }
 
 button,
 .yui-button button,
 input[type="submit"] {
-    background: #24364e !important;
-    color: #e6edf7 !important;
-    border-color: #536982 !important;
+    background: #28231c !important;
+    color: #e8ded1 !important;
+    border-color: var(--cso-vd-border) !important;
 }
 
 button:hover,
 .yui-button button:hover,
 input[type="submit"]:hover {
-    background: #304968 !important;
-    color: #ffffff !important;
+    background: #342d24 !important;
+    color: #fff3df !important;
 }
 
 .pager ul li,
 .pager ul li a,
 .pager ul li a:visited {
-    background-color: #162337 !important;
+    background-color: var(--cso-vd-panel) !important;
     background-image: none !important;
-    color: #8fb8ff !important;
-    border-color: #334156 !important;
+    color: var(--cso-vd-link) !important;
+    border-color: var(--cso-vd-border-soft) !important;
 }
 
 hr {
-    border-color: #334156 !important;
+    border-color: var(--cso-vd-border-soft) !important;
 }
 
 table,
 td,
 th {
-    border-color: #334156 !important;
+    border-color: var(--cso-vd-border-soft) !important;
 }
 
 img {
@@ -227,5 +241,5 @@ img {
 
 #adwrapper-lb,
 #adwrapper-bs {
-    background: #101824 !important;
+    background: var(--cso-vd-panel-deep) !important;
 }
