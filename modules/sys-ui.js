@@ -20,6 +20,13 @@ function injectUI() {
     if (!menu) return log('ERROR', 'Could not find .head .menu');
     if (document.getElementById('cssokoun-switcher')) return;
 
+    document.querySelectorAll('a[title="cssokoun Hub"], #cssokoun-switcher').forEach(node => node.remove());
+    window.cssokoun.hubWindow = null;
+    window.cssokoun.editorWindow = null;
+    window.cssokoun.inspectorWindow = null;
+    window.cssokoun.launchEditor = null;
+    window.cssokoun.launchInspector = null;
+
     const manifest = window.cssokoun.manifest || {};
     const themes = manifest.themes || [];
     const selectedThemeId = getSelectedThemeId(themes, window.cssokoun.state.modules);

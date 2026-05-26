@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         cssokoun Seed
 // @namespace    https://github.com/hanenashi/cssokoun
-// @version      0.7
+// @version      0.8
 // @description  CSS style switcher for okoun.cz
 // @author       kokochan / hanenashi
 // @match        *://www.okoun.cz/*
@@ -44,7 +44,8 @@
 
     // --- 2. THE PIPELINE ---
     const REPO_URL = 'https://raw.githubusercontent.com/hanenashi/cssokoun/main/';
-    const CORE_URL = REPO_URL + 'modules/core.js?v=' + Date.now();
+    const BUILD_ID = 'css-switcher-20260527';
+    const CORE_URL = REPO_URL + 'modules/core.js?v=' + BUILD_ID + '-' + Date.now();
 
     const fetcher = (typeof GM_xmlhttpRequest !== 'undefined') ? GM_xmlhttpRequest : (typeof GM !== 'undefined' && GM.xmlHttpRequest) ? GM.xmlHttpRequest : null;
     const getter = (typeof GM_getValue !== 'undefined') ? GM_getValue : (typeof GM !== 'undefined' && GM.getValue) ? GM.getValue : null;
