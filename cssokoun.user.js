@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name         cssokoun Seed
 // @namespace    https://github.com/hanenashi/cssokoun
-// @version      0.8
+// @version      0.9
 // @description  CSS style switcher for okoun.cz
 // @author       kokochan / hanenashi
 // @match        *://www.okoun.cz/*
 // @run-at       document-start
+// @updateURL    https://raw.githubusercontent.com/hanenashi/cssokoun/main/cssokoun.user.js
+// @downloadURL  https://raw.githubusercontent.com/hanenashi/cssokoun/main/cssokoun.user.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM.xmlHttpRequest
 // @grant        GM_getValue
@@ -17,6 +19,7 @@
 // @grant        GM_addStyle
 // @grant        GM.addStyle
 // @connect      raw.githubusercontent.com
+// @connect      api.github.com
 // @connect      *
 // ==/UserScript==
 
@@ -43,9 +46,9 @@
     }, 1500);
 
     // --- 2. THE PIPELINE ---
-    const REPO_URL = 'https://raw.githubusercontent.com/hanenashi/cssokoun/main/';
-    const BUILD_ID = 'css-switcher-20260527';
-    const CORE_URL = REPO_URL + 'modules/core.js?v=' + BUILD_ID + '-' + Date.now();
+    const RAW_MAIN_URL = 'https://raw.githubusercontent.com/hanenashi/cssokoun/main/';
+    const COMMIT_API_URL = 'https://api.github.com/repos/hanenashi/cssokoun/commits/main';
+    const CACHE_BUST = String(Date.now());
 
     const fetcher = (typeof GM_xmlhttpRequest !== 'undefined') ? GM_xmlhttpRequest : (typeof GM !== 'undefined' && GM.xmlHttpRequest) ? GM.xmlHttpRequest : null;
     const getter = (typeof GM_getValue !== 'undefined') ? GM_getValue : (typeof GM !== 'undefined' && GM.getValue) ? GM.getValue : null;
@@ -54,6 +57,38 @@
     const styler = (typeof GM_addStyle !== 'undefined') ? GM_addStyle : null;
 
     if (!fetcher) return console.error("[cssokoun::seed] FATAL: Cross-origin not supported.");
+
+    function requestText(url) {
+        return new Promise((resolve, reject) => {
+            fetcher({
+                method: "GET",
+                url,
+                onload: function(res) {
+                    if (res.status >= 200 && res.status < 300) {
+                        resolve(res.responseText);
+                    } else {
+                        reject(new Error(`HTTP ${res.status} for ${url}`));
+                    }
+                },
+                onerror: () => reject(new Error(`Request failed for ${url}`)),
+                ontimeout: () => reject(new Error(`Request timed out for ${url}`))
+            });
+        });
+    }
+
+    async function resolveRepoUrl() {
+        try {
+            const raw = await requestText(`${COMMIT_API_URL}?v=${CACHE_BUST}`);
+            const payload = JSON.parse(raw);
+            if (payload && payload.sha) {
+                return `https://raw.githubusercontent.com/hanenashi/cssokoun/${payload.sha}/`;
+            }
+        } catch (e) {
+            console.warn("[cssokoun::seed] commit lookup failed; falling back to main", e);
+        }
+
+        return RAW_MAIN_URL;
+    }
 
     let memCache = {};
     if (getter) {
@@ -73,6 +108,8 @@
 
     const GM_API = {
         fetch: (opts) => fetcher(opts),
+        requestText,
+        cacheBust: CACHE_BUST,
         get: (key, def) => memCache[key] !== undefined ? memCache[key] : def,
         set: async (key, val) => {
             memCache[key] = val; 
@@ -86,14 +123,14 @@
         }
     };
 
-    fetcher({
-        method: "GET",
-        url: CORE_URL,
-        onload: function(res) {
-            if (res.status === 200) {
-                const initCore = new Function('GM', 'REPO', res.responseText);
-                initCore(GM_API, REPO_URL);
-            }
-        }
-    });
+    try {
+        const repoUrl = await resolveRepoUrl();
+        GM_API.repoUrl = repoUrl;
+        const coreUrl = repoUrl + 'modules/core.js?v=' + CACHE_BUST;
+        const coreCode = await requestText(coreUrl);
+        const initCore = new Function('GM', 'REPO', coreCode);
+        initCore(GM_API, repoUrl);
+    } catch (e) {
+        console.error("[cssokoun::seed] core load failed", e);
+    }
 })();

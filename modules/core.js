@@ -49,7 +49,8 @@ function applyThemeSideEffects(id) {
     }
 })();
 
-const MANIFEST_URL = REPO + 'modules.json?v=' + Date.now();
+const CACHE_BUST = GM.cacheBust || Date.now();
+const MANIFEST_URL = REPO + 'modules.json?v=' + CACHE_BUST;
 
 GM.fetch({
     method: "GET",
@@ -84,7 +85,7 @@ function uncloakPage() {
 }
 
 function loadModules(manifest) {
-    const cacheBuster = `?v=${Date.now()}`;
+    const cacheBuster = `?v=${CACHE_BUST}`;
     let pendingThemes = 0;
 
     const injectCSS = (url, id) => {
@@ -112,6 +113,7 @@ function loadModules(manifest) {
                     }
                     if (freshCSS !== cachedCSS) {
                         GM.set(cacheKey, freshCSS);
+                        if (cachedCSS) addThemeStyle(freshCSS, id);
                     }
                     coreLog('INFO', `Loaded CSS theme: ${id}`);
                 } else if (!cachedCSS) {
